@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "121949024679",
+    "firebase_url": "https://sensor-ahrs.firebaseio.com",
+    "project_id": "sensor-ahrs",
+    "storage_bucket": "sensor-ahrs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121949024679:android:bcaff3a13d89c416",
+        "android_client_info": {
+          "package_name": "mx.uabc.ahrs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "121949024679-0incrpsg57ocoht18ruifqhnrs1r610o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLy1O0GGV3ENaGtz5lyCy-oabTFPyduj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "121949024679-0incrpsg57ocoht18ruifqhnrs1r610o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

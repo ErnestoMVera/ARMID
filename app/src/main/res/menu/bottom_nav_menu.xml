@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_training"
+        android:icon="@drawable/ic_training"
+        android:title="Entrenamiento" />
+
+    <item
+        android:id="@+id/navigation_classificator"
+        android:icon="@drawable/ic_classificator"
+        android:title="Clasificador" />
+
+    <item
+       android:id="@+id/navigation_recollection"
+        android:icon="@drawable/ic_car"
+        android:title="Recolección" />
+
+</menu>
