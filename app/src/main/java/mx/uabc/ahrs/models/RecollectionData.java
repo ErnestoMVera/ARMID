@@ -10,8 +10,9 @@ public class RecollectionData {
     private float speed;
     private double lat;
     private double lng;
-    private String activity;
-    private String roadType;
+    private String comportamientoConduccion;
+    private String ejecucionComportamiento;
+    private String tareaSecundariaConduccion;
 
     public double getPitch() {
         return pitch;
@@ -45,16 +46,22 @@ public class RecollectionData {
         return lng;
     }
 
-    public String getActivity() {
-        return activity;
+    public String getComportamientoConduccion() {
+        return comportamientoConduccion;
     }
 
-    public String getRoadType() {
-        return roadType;
+    public String getEjecucionComportamiento() {
+        return ejecucionComportamiento;
+    }
+
+    public String getTareaSecundariaConduccion() {
+        return tareaSecundariaConduccion;
     }
 
     public RecollectionData(double pitch, double roll, double yaw, int spot, long timestamp,
-                            float speed, double lat, double lng, String activity, String roadType) {
+                            float speed, double lat, double lng,
+                            String comportamientoConduccion, String ejecucionComportamiento,
+                            String tareaSecundariaConduccion) {
         this.pitch = pitch;
         this.roll = roll;
         this.yaw = yaw;
@@ -63,7 +70,8 @@ public class RecollectionData {
         this.speed = speed;
         this.lat = lat;
         this.lng = lng;
-        this.activity = activity;
-        this.roadType = roadType;
+        this.comportamientoConduccion = comportamientoConduccion;
+        this.ejecucionComportamiento = ejecucionComportamiento;
+        this.tareaSecundariaConduccion = tareaSecundariaConduccion;
     }
 }

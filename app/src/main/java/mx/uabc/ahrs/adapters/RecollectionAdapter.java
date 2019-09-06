@@ -23,7 +23,6 @@ public class RecollectionAdapter extends BaseAdapter {
         this.dataList.add(new Setting("Spot", "N/A"));
         this.dataList.add(new Setting("Velocidad", "N/A"));
         this.dataList.add(new Setting("GPS", "N/A"));
-        this.dataList.add(new Setting("Tipo de camino", "N/A"));
     }
 
     public void addItem(RecollectionData recollectionData) {
@@ -32,7 +31,6 @@ public class RecollectionAdapter extends BaseAdapter {
         dataList.add(new Setting("Spot", DataPoint.getSpotName(recollectionData.getSpot())));
         dataList.add(new Setting("Velocidad", (recollectionData.getSpeed() * 3.6) + " km/h"));
         dataList.add(new Setting("GPS", recollectionData.getLat() + ", " + recollectionData.getLng()));
-        dataList.add(new Setting("Tipo de camino", recollectionData.getRoadType()));
         notifyDataSetChanged();
     }
 

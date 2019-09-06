@@ -61,6 +61,8 @@ public class ClassifierFragment extends Fragment {
 
     @BindView(R.id.class_label)
     TextView classLabel;
+    @BindView(R.id.timestamp_label)
+    TextView timestampLabel;
     @BindView(R.id.sample_label)
     TextView sampleLabel;
 
@@ -71,7 +73,8 @@ public class ClassifierFragment extends Fragment {
         int spot = classifier.classifyDataPoint(dataPoint);
         String s = DataPoint.getSpotName(spot);
         classLabel.setText(s);
-
+        long ts = System.currentTimeMillis();
+        timestampLabel.setText(String.valueOf(ts));
     }
 
     public ClassifierFragment() {

@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -39,6 +41,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.adapters.RecollectionAdapter;
@@ -58,7 +61,9 @@ public class RecollectionFragment extends Fragment {
     private boolean isRecording;
     private Classifier classifier;
     private Location lastLocation;
-    private RoadType roadType;
+    private String comportamiento;
+    private String ejecucion;
+    private String tareaSecundaria;
 
     private Unbinder unbinder;
     private Context mContext;
@@ -67,10 +72,6 @@ public class RecollectionFragment extends Fragment {
     private FileOutputStream fileOutputStream;
 
     private ProgressDialog progressDialog;
-
-    private enum RoadType {
-        Residencial, Bulevard
-    }
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -88,17 +89,27 @@ public class RecollectionFragment extends Fragment {
         }
     };
 
-    @OnClick({R.id.fab_home, R.id.fab_road})
-    public void changeRoadType(View view) {
-        switch (view.getId()) {
-            case R.id.fab_home:
-                roadType = RoadType.Residencial;
+    @OnItemSelected({R.id.comportamiento_spinner, R.id.ejecucion_spinner, R.id.tarea_spinner})
+    public void spinnerSelectedItem(Spinner spinner, int position) {
+        switch (spinner.getId()) {
+            case R.id.comportamiento_spinner:
+                comportamiento = comportamientoSpinner.getSelectedItem().toString();
                 break;
-            case R.id.fab_road:
-                roadType = RoadType.Bulevard;
+            case R.id.ejecucion_spinner:
+                ejecucion = ejecucionSpinner.getSelectedItem().toString();
+                break;
+            case R.id.tarea_spinner:
+                tareaSecundaria = tareaSpinner.getSelectedItem().toString();
                 break;
         }
     }
+
+    @BindView(R.id.comportamiento_spinner)
+    Spinner comportamientoSpinner;
+    @BindView(R.id.ejecucion_spinner)
+    Spinner ejecucionSpinner;
+    @BindView(R.id.tarea_spinner)
+    Spinner tareaSpinner;
 
     @OnClick(R.id.record)
     public void record(View view) {
@@ -205,7 +216,7 @@ public class RecollectionFragment extends Fragment {
         RecollectionData data = new RecollectionData(event.getX(), event.getY(), event.getZ(),
                 spot, event.getTimestamp(),
                 lastLocation.getSpeed(), lastLocation.getLatitude(), lastLocation.getLongitude(),
-                "Manejando", roadType.toString());
+                comportamiento, ejecucion, tareaSecundaria);
 
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(data));
@@ -213,7 +224,7 @@ public class RecollectionFragment extends Fragment {
         String toSave = event.getX() + "," + event.getY() + "," + event.getZ() + "," + spot + ","
                 + event.getTimestamp() + "," + lastLocation.getSpeed() + ","
                 + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + ","
-                + "Manejando" + "," + roadType.toString() + "\n";
+                + comportamiento + "," + ejecucion + "," + tareaSecundaria + "\n";
 
         try {
 
@@ -248,7 +259,6 @@ public class RecollectionFragment extends Fragment {
         int userId = args.getInt(USER_ID_PARAM);
         user = DatabaseManager.getInstance(mContext).getUserDao().loadById(userId);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
-        roadType = RoadType.Residencial;
     }
 
     @Override
@@ -263,6 +273,7 @@ public class RecollectionFragment extends Fragment {
 
     private void initUI() {
 
+        initSpinners();
         adapter = new RecollectionAdapter();
         listView.setAdapter(adapter);
 
@@ -305,6 +316,25 @@ public class RecollectionFragment extends Fragment {
                     "No se pudo leer el dataset", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
+    }
+
+    private void initSpinners() {
+
+        ArrayAdapter<CharSequence> comportamientoAdapter = ArrayAdapter.createFromResource(mContext,
+                R.array.comportamientos, android.R.layout.simple_spinner_item);
+        comportamientoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        comportamientoSpinner.setAdapter(comportamientoAdapter);
+
+        ArrayAdapter<CharSequence> ejecucionAdapter = ArrayAdapter.createFromResource(mContext,
+                R.array.ejecucion_comportamiento, android.R.layout.simple_spinner_item);
+        ejecucionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ejecucionSpinner.setAdapter(ejecucionAdapter);
+
+        ArrayAdapter<CharSequence> tareaAdapter = ArrayAdapter.createFromResource(mContext,
+                R.array.tarea_secundaria, android.R.layout.simple_spinner_item);
+        tareaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tareaSpinner.setAdapter(tareaAdapter);
 
     }
 

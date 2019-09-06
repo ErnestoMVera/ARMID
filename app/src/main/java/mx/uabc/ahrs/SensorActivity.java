@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -29,6 +30,7 @@ public class SensorActivity extends AppCompatActivity {
 
     public static final String USER_ID_PARAM = "userIdParam";
     private int userId;
+    private boolean isCalibrated;
     SensorManager sensorManager;
     Handler handler = new Handler();
 
@@ -50,6 +52,11 @@ public class SensorActivity extends AppCompatActivity {
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
+        if (!isCalibrated) {
+            showCalibrationDialog();
+            return;
+        }
+
         if (sensorStreamingEvent.getAction() == SensorStreamingEvent.START) {
             handler.post(runnableCode);
         } else if (sensorStreamingEvent.getAction() == SensorStreamingEvent.STOP) {
@@ -57,6 +64,16 @@ public class SensorActivity extends AppCompatActivity {
             Toast.makeText(this, "Sensado detenido", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void showCalibrationDialog() {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Calibración del sensor")
+                .setMessage("Antes de utilizar el sensor es necesario calibrarlo")
+                .setPositiveButton(android.R.string.yes, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     @Override
@@ -74,7 +91,7 @@ public class SensorActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.tare_sensor) {
 
             sensorManager.setTareCurrentOrient();
-
+            isCalibrated = true;
             Toast.makeText(this, "Sensor calibrado", Toast.LENGTH_SHORT).show();
 
             return true;

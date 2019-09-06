@@ -22,7 +22,19 @@
         android:layout_centerInParent="true"
         android:text="-"
         android:textColor="@color/textColorPrimary"
-        android:textSize="20sp" />
+        android:textSize="28sp"
+        tools:text="SPOT" />
+
+    <TextView
+        android:id="@+id/timestamp_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/class_label"
+        android:layout_centerInParent="true"
+        android:text="-"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="28sp"
+        tools:text="TIMESTAMP" />
 
     <TextView
         android:id="@+id/sample_label"
@@ -30,8 +42,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_margin="16dp"
-        tools:text="Tamaño del dataset: - muestras"
         android:textColor="@color/textColorSecondary"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:text="Tamaño del dataset: - muestras" />
 
 </RelativeLayout>

@@ -2,6 +2,7 @@ package mx.uabc.ahrs;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initUI() {
 
+        registerForContextMenu(listView);
+
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle("Sujetos");
 
@@ -117,6 +120,33 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId() == R.id.listView) {
+            getMenuInflater().inflate(R.menu.list_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (item.getItemId() == R.id.delete) {
+            deleteUser(adapter.getItem(info.position));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void deleteUser(User user) {
+
+        databaseManager.getUserDao().delete(user);
+        fetchUsers();
     }
 
     @Override
