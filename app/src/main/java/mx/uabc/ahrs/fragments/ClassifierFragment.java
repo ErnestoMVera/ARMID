@@ -1,6 +1,7 @@
 package mx.uabc.ahrs.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -55,6 +56,7 @@ public class ClassifierFragment extends Fragment {
 
     private int readings, correctReadings, incorrectReadings;
 
+    @SuppressLint("SetTextI18n")
     @OnClick(R.id.classifier_btn)
     public void classify(View view) {
 
@@ -135,6 +137,7 @@ public class ClassifierFragment extends Fragment {
         updateViews(selectedSpot, predictedSpot);
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateViews(int selectedSpot, int predictedSpot) {
 
         long ts = System.currentTimeMillis();
@@ -155,7 +158,7 @@ public class ClassifierFragment extends Fragment {
             lecturasIncorrectas.setText("Clasificadas incorrectamente: " + incorrectReadings);
             precision.setText("Precisión: " + acc + " %");
         });
-        
+
     }
 
     public ClassifierFragment() {

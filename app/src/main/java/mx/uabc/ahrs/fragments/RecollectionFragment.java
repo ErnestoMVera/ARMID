@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -312,7 +310,7 @@ public class RecollectionFragment extends Fragment {
         getActivity().runOnUiThread(() -> adapter.addItem(data));
 
         String toSave = event.getX() + "," + event.getY() + "," + event.getZ() + "," + spot + ","
-                + event.getTimestamp() + "," + lastLocation.getSpeed() + ","
+                + System.currentTimeMillis() + "," + lastLocation.getSpeed() + ","
                 + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + ","
                 + comportamiento + "," + ejecucion + "," + tareaSecundaria + "\n";
 
