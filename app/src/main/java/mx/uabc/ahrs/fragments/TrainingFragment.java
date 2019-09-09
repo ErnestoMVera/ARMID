@@ -260,7 +260,7 @@ public class TrainingFragment extends Fragment {
 
     private void initUI() {
 
-        adapter = new TrainingAdapter(7);
+        adapter = new TrainingAdapter(5);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             selectedIndex = i;

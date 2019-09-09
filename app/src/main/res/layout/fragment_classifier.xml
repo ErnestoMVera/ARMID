@@ -5,6 +5,520 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ClassifierFragment">
 
+    <TextView
+        android:id="@+id/timestamp_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Timestamp: N/A"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="24sp"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/classifier_btn"
+        android:layout_below="@id/timestamp_label"
+        android:orientation="vertical">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="S0"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="S1"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="S2"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="S3"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="S4"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/s0_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/s0_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="S0"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/s1_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/s1_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="S1"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/s2_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/s2_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="S2"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/s3_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/s3_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="S3"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/s4_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/s4_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="S4"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="4"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="5"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="6"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <TextView
+            android:id="@+id/lecturas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="20sp"
+            tools:text="Lecturas: " />
+
+        <TextView
+            android:id="@+id/lecturasCorrectas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="20sp"
+            tools:text="Clasificadas correctamente: " />
+
+        <TextView
+            android:id="@+id/lecturasIncorrectas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="20sp"
+            tools:text="Clasificadas incorrectamente: " />
+
+        <TextView
+            android:id="@+id/precision"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="20sp"
+            tools:text="Precisión: " />
+
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/classifier_btn"
         style="@style/Widget.AppCompat.Button.Colored"
@@ -14,36 +528,5 @@
         android:layout_margin="16dp"
         android:text="Clasificar"
         tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/class_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="-"
-        android:textColor="@color/textColorPrimary"
-        android:textSize="28sp"
-        tools:text="SPOT" />
-
-    <TextView
-        android:id="@+id/timestamp_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/class_label"
-        android:layout_centerInParent="true"
-        android:text="-"
-        android:textColor="@color/textColorPrimary"
-        android:textSize="28sp"
-        tools:text="TIMESTAMP" />
-
-    <TextView
-        android:id="@+id/sample_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_margin="16dp"
-        android:textColor="@color/textColorSecondary"
-        android:textSize="18sp"
-        tools:text="Tamaño del dataset: - muestras" />
 
 </RelativeLayout>

@@ -3,18 +3,21 @@ package mx.uabc.ahrs.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -23,6 +26,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,9 +43,9 @@ import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.adapters.RecollectionAdapter;
@@ -54,6 +58,20 @@ import mx.uabc.ahrs.models.DataPoint;
 import mx.uabc.ahrs.models.RecollectionData;
 
 public class RecollectionFragment extends Fragment {
+
+    private enum Comportamiento {
+        LINEA_RECTA, VUELTA_IZQUIERDA, VUELTA_DERECHA, SEMAFORO, ESTACIONAMIENTO,
+        CAMBIO_CARRIL_IZQUIERDA, CAMBIO_CARRIL_DERECHA, ALTO_LINEA_RECTA,
+        ALTO_VUELTA_IZQUIERDA, ALTO_VUELTA_DERECHA
+    }
+
+    private enum Ejecucion {
+        NATURAL, SOLICITADO
+    }
+
+    private enum TareaSecundaria {
+        SIN_COPILOTO, CON_COPILOTO
+    }
 
     private static final String USER_ID_PARAM = "userIdParam";
 
@@ -89,27 +107,87 @@ public class RecollectionFragment extends Fragment {
         }
     };
 
-    @OnItemSelected({R.id.comportamiento_spinner, R.id.ejecucion_spinner, R.id.tarea_spinner})
-    public void spinnerSelectedItem(Spinner spinner, int position) {
-        switch (spinner.getId()) {
-            case R.id.comportamiento_spinner:
-                comportamiento = comportamientoSpinner.getSelectedItem().toString();
-                break;
-            case R.id.ejecucion_spinner:
-                ejecucion = ejecucionSpinner.getSelectedItem().toString();
-                break;
-            case R.id.tarea_spinner:
-                tareaSecundaria = tareaSpinner.getSelectedItem().toString();
-                break;
+    private void setFabBackgroundToDefault(List<FloatingActionButton> fabs) {
+        for (FloatingActionButton fab : fabs) {
+            fab.setBackgroundTintList(ColorStateList
+                    .valueOf(Color.parseColor("#536DFE")));
         }
     }
 
-    @BindView(R.id.comportamiento_spinner)
-    Spinner comportamientoSpinner;
-    @BindView(R.id.ejecucion_spinner)
-    Spinner ejecucionSpinner;
-    @BindView(R.id.tarea_spinner)
-    Spinner tareaSpinner;
+    private void setFabBackgroundToSelected(FloatingActionButton fab) {
+        fab.setBackgroundTintList(ColorStateList
+                .valueOf(Color.parseColor("#607D8B")));
+    }
+
+    @OnClick({R.id.action_straight, R.id.action_turn_left, R.id.action_turn_right,
+            R.id.action_traffic_light, R.id.action_parking, R.id.action_change_left,
+            R.id.action_change_right, R.id.action_stop_straight, R.id.action_stop_left,
+            R.id.action_stop_right})
+    public void onComportamientoClicked(View view) {
+
+        setFabBackgroundToDefault(comportamientosFABs);
+        setFabBackgroundToSelected((FloatingActionButton) view);
+
+        switch (view.getId()) {
+            case R.id.action_straight:
+                comportamiento = Comportamiento.LINEA_RECTA.toString();
+                break;
+            case R.id.action_turn_left:
+                comportamiento = Comportamiento.VUELTA_IZQUIERDA.toString();
+                break;
+            case R.id.action_turn_right:
+                comportamiento = Comportamiento.VUELTA_DERECHA.toString();
+                break;
+            case R.id.action_traffic_light:
+                comportamiento = Comportamiento.SEMAFORO.toString();
+                break;
+            case R.id.action_parking:
+                comportamiento = Comportamiento.ESTACIONAMIENTO.toString();
+                break;
+            case R.id.action_change_left:
+                comportamiento = Comportamiento.CAMBIO_CARRIL_IZQUIERDA.toString();
+                break;
+            case R.id.action_change_right:
+                comportamiento = Comportamiento.CAMBIO_CARRIL_DERECHA.toString();
+                break;
+            case R.id.action_stop_straight:
+                comportamiento = Comportamiento.ALTO_LINEA_RECTA.toString();
+                break;
+            case R.id.action_stop_left:
+                comportamiento = Comportamiento.ALTO_VUELTA_IZQUIERDA.toString();
+                break;
+            case R.id.action_stop_right:
+                comportamiento = Comportamiento.ALTO_VUELTA_DERECHA.toString();
+                break;
+        }
+
+    }
+
+    @OnClick({R.id.natural, R.id.solicitado})
+    public void onEjecucionClicked(View view) {
+
+        setFabBackgroundToDefault(ejecucionFABs);
+        setFabBackgroundToSelected((FloatingActionButton) view);
+
+        if (view.getId() == R.id.natural) {
+            ejecucion = Ejecucion.NATURAL.toString();
+        } else {
+            ejecucion = Ejecucion.SOLICITADO.toString();
+        }
+    }
+
+    @OnClick({R.id.sin_copiloto, R.id.con_copiloto})
+    public void onTareaSecundariaClicked(View view) {
+
+        setFabBackgroundToDefault(tareaSecundariaFABs);
+        setFabBackgroundToSelected((FloatingActionButton) view);
+
+        if (view.getId() == R.id.sin_copiloto) {
+            tareaSecundaria = TareaSecundaria.SIN_COPILOTO.toString();
+        } else {
+            tareaSecundaria = TareaSecundaria.CON_COPILOTO.toString();
+        }
+    }
 
     @OnClick(R.id.record)
     public void record(View view) {
@@ -204,6 +282,18 @@ public class RecollectionFragment extends Fragment {
     @BindView(R.id.listView)
     ListView listView;
 
+    @BindViews({R.id.action_straight, R.id.action_turn_left, R.id.action_turn_right,
+            R.id.action_traffic_light, R.id.action_parking, R.id.action_change_left,
+            R.id.action_change_right, R.id.action_stop_straight, R.id.action_stop_left,
+            R.id.action_stop_right})
+    List<FloatingActionButton> comportamientosFABs;
+
+    @BindViews({R.id.natural, R.id.solicitado})
+    List<FloatingActionButton> ejecucionFABs;
+
+    @BindViews({R.id.sin_copiloto, R.id.con_copiloto})
+    List<FloatingActionButton> tareaSecundariaFABs;
+
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
@@ -273,7 +363,8 @@ public class RecollectionFragment extends Fragment {
 
     private void initUI() {
 
-        initSpinners();
+        initButtons();
+
         adapter = new RecollectionAdapter();
         listView.setAdapter(adapter);
 
@@ -319,23 +410,19 @@ public class RecollectionFragment extends Fragment {
 
     }
 
-    private void initSpinners() {
+    private void initButtons() {
 
-        ArrayAdapter<CharSequence> comportamientoAdapter = ArrayAdapter.createFromResource(mContext,
-                R.array.comportamientos, android.R.layout.simple_spinner_item);
-        comportamientoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        comportamientoSpinner.setAdapter(comportamientoAdapter);
+        FloatingActionButton fab1 = comportamientosFABs.get(0);
+        FloatingActionButton fab2 = ejecucionFABs.get(0);
+        FloatingActionButton fab3 = tareaSecundariaFABs.get(0);
 
-        ArrayAdapter<CharSequence> ejecucionAdapter = ArrayAdapter.createFromResource(mContext,
-                R.array.ejecucion_comportamiento, android.R.layout.simple_spinner_item);
-        ejecucionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ejecucionSpinner.setAdapter(ejecucionAdapter);
+        setFabBackgroundToSelected(fab1);
+        setFabBackgroundToSelected(fab2);
+        setFabBackgroundToSelected(fab3);
 
-        ArrayAdapter<CharSequence> tareaAdapter = ArrayAdapter.createFromResource(mContext,
-                R.array.tarea_secundaria, android.R.layout.simple_spinner_item);
-        tareaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tareaSpinner.setAdapter(tareaAdapter);
-
+        comportamiento = Comportamiento.LINEA_RECTA.toString();
+        ejecucion = Ejecucion.NATURAL.toString();
+        tareaSecundaria = TareaSecundaria.SIN_COPILOTO.toString();
     }
 
     private LocationRequest createLocationRequest() {
@@ -361,7 +448,7 @@ public class RecollectionFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }

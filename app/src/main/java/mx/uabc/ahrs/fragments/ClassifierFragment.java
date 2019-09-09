@@ -3,16 +3,17 @@ package mx.uabc.ahrs.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.opencsv.CSVReader;
 
@@ -23,8 +24,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
@@ -47,6 +50,11 @@ public class ClassifierFragment extends Fragment {
     private Unbinder unbinder;
     private Context mContext;
 
+    private int selectedSpot;
+    private int[][] confusionMatrix = new int[5][5];
+
+    private int readings, correctReadings, incorrectReadings;
+
     @OnClick(R.id.classifier_btn)
     public void classify(View view) {
 
@@ -57,24 +65,97 @@ public class ClassifierFragment extends Fragment {
         String text = isRecording ? "Clasificar" : "Detener";
         button.setText(text);
         isRecording = !isRecording;
+
+        if (!isRecording) {
+            timestampLabel.setText("Timestamp: N/A");
+        }
     }
 
-    @BindView(R.id.class_label)
-    TextView classLabel;
     @BindView(R.id.timestamp_label)
     TextView timestampLabel;
-    @BindView(R.id.sample_label)
-    TextView sampleLabel;
+    @BindView(R.id.lecturas)
+    TextView lecturas;
+    @BindView(R.id.lecturasCorrectas)
+    TextView lecturasCorrectas;
+    @BindView(R.id.lecturasIncorrectas)
+    TextView lecturasIncorrectas;
+    @BindView(R.id.precision)
+    TextView precision;
+
+    @BindViews({R.id.s0_row, R.id.s1_row, R.id.s2_row, R.id.s3_row, R.id.s4_row})
+    List<TableRow> rowsList;
+
+    @BindViews({R.id.s0_tag, R.id.s1_tag, R.id.s2_tag, R.id.s3_tag, R.id.s4_tag})
+    List<TextView> tagsList;
+
+    @OnClick({R.id.s0_tag, R.id.s1_tag, R.id.s2_tag, R.id.s3_tag, R.id.s4_tag})
+    public void onTagClicked(View view) {
+
+        switch (view.getId()) {
+            case R.id.s0_tag:
+                selectedSpot = 0;
+                break;
+            case R.id.s1_tag:
+                selectedSpot = 1;
+                break;
+            case R.id.s2_tag:
+                selectedSpot = 2;
+                break;
+            case R.id.s3_tag:
+                selectedSpot = 3;
+                break;
+            case R.id.s4_tag:
+                selectedSpot = 4;
+                break;
+        }
+
+        for (TextView textView : tagsList) {
+            textView.setTextColor(mContext.getResources().getColor(R.color.textColorPrimary));
+        }
+
+        TextView selectedTextView = (TextView) view;
+        selectedTextView.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+    }
 
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
+        readings++;
+
         DataPoint dataPoint = new DataPoint(event.getX(), event.getY(), event.getZ(), -1);
-        int spot = classifier.classifyDataPoint(dataPoint);
-        String s = DataPoint.getSpotName(spot);
-        classLabel.setText(s);
+        int predictedSpot = classifier.classifyDataPoint(dataPoint);
+
+        if (predictedSpot == selectedSpot)
+            correctReadings++;
+        else
+            incorrectReadings++;
+
+        confusionMatrix[selectedSpot][predictedSpot]++;
+
+        updateViews(selectedSpot, predictedSpot);
+    }
+
+    private void updateViews(int selectedSpot, int predictedSpot) {
+
         long ts = System.currentTimeMillis();
-        timestampLabel.setText(String.valueOf(ts));
+        int value = confusionMatrix[selectedSpot][predictedSpot];
+
+        TextView location = (TextView) rowsList
+                .get(selectedSpot)
+                .getChildAt(predictedSpot + 1);
+
+        float acc = (correctReadings * 100) / readings;
+
+        assert getActivity() != null;
+        getActivity().runOnUiThread(() -> {
+            location.setText(String.valueOf(value));
+            timestampLabel.setText("Timestamp: " + ts);
+            lecturas.setText("Lecturas: " + readings);
+            lecturasCorrectas.setText("Clasificadas correctamente: " + correctReadings);
+            lecturasIncorrectas.setText("Clasificadas incorrectamente: " + incorrectReadings);
+            precision.setText("Precisión: " + acc + " %");
+        });
+        
     }
 
     public ClassifierFragment() {
@@ -113,6 +194,8 @@ public class ClassifierFragment extends Fragment {
 
     private void initUI() {
 
+        tagsList.get(0).callOnClick();
+
         classifier = new Classifier();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
@@ -123,16 +206,12 @@ public class ClassifierFragment extends Fragment {
             return;
         }
 
-        int length = 0;
-
         try {
             FileReader reader = new FileReader(trainingFile);
             CSVReader csvReader = new CSVReader(reader);
 
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
-
-                length++;
 
                 double x, y, z;
                 int spot;
@@ -156,10 +235,6 @@ public class ClassifierFragment extends Fragment {
                     "No se pudo leer el dataset", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
-        String txt = "Tamaño del dataset: " + length + " muestras";
-        sampleLabel.setText(txt);
-
     }
 
     @Override
@@ -175,7 +250,7 @@ public class ClassifierFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }

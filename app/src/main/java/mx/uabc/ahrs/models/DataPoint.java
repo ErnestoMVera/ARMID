@@ -62,11 +62,7 @@ public class DataPoint {
             case 3:
                 return "Retrovisor derecho";
             case 4:
-                return "Dashboard";
-            case 5:
-                return "Radio";
-            case 6:
-                return "Copiloto";
+                return "Dashboard - Radio";
         }
 
         return "No definido";

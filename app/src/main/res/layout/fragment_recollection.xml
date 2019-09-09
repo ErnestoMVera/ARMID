@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,11 +28,108 @@
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
 
-            <Spinner
-                android:id="@+id/comportamiento_spinner"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_straight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_long_arrow_pointing_up" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_turn_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_turn_left" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_turn_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_turn_right" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_traffic_light"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_traffic_light" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_parking"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_parking" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_change_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_arrow_shape_turning_to_left" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_change_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_turn_to_right_arrow" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_stop_straight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_stop_straight"
+                    app:maxImageSize="48dp" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_stop_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_stop_left"
+                    app:maxImageSize="48dp" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/action_stop_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_stop_right"
+                    app:maxImageSize="48dp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -49,11 +147,29 @@
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
 
-            <Spinner
-                android:id="@+id/ejecucion_spinner"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/natural"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_letter_n" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/solicitado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_letter_s" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -71,11 +187,29 @@
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
 
-            <Spinner
-                android:id="@+id/tarea_spinner"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/sin_copiloto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_one_person" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/con_copiloto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_two_person" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

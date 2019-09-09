@@ -157,7 +157,7 @@ public class SensorActivity extends AppCompatActivity {
 
     private void stopBT() {
 
-        if (sensorManager.isStreaming)
+        if (sensorManager != null && sensorManager.isStreaming)
             sensorManager.stopStreaming();
 
     }

@@ -1,29 +1,5 @@
 <resources>
     <string name="app_name">AHRS</string>
     <string name="configuraciones">Configuraciones</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="borrar">Borrar</string>
-
-    <string-array name="comportamientos">
-        <item>Vehículo detenido</item>
-        <item>Cambio de carril - Izquierda</item>
-        <item>Cambio de carril - Derecha</item>
-        <item>Alto - Sigue derecho </item>
-        <item>Alto - Vuelta a la izquierda</item>
-        <item>Alto - Vuelta a la derecha</item>
-        <item>Semáforo en rojo</item>
-        <item>Conducción en línea recta</item>
-        <item>Estacionándose</item>
-    </string-array>
-
-    <string-array name="ejecucion_comportamiento">
-        <item>Natural</item>
-        <item>Solicitada</item>
-    </string-array>
-
-    <string-array name="tarea_secundaria">
-        <item>Sin copiloto</item>
-        <item>Con copiloto</item>
-    </string-array>
-
 </resources>
