@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.divyanshu.draw.widget.DrawView;
+
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
@@ -33,7 +35,11 @@ public class CreateUserDialogFragment extends DialogFragment {
     private String selectedGender;
 
     public CreateUserDialogFragment() {
+    }
 
+    @OnClick(R.id.clear_btn)
+    public void clearDrawView() {
+        drawView.clearCanvas();
     }
 
     @OnClick(R.id.add_user_btn)
@@ -41,7 +47,7 @@ public class CreateUserDialogFragment extends DialogFragment {
 
         String name = nameEditText.getEditableText().toString();
         String age = ageEditText.getEditableText().toString();
-        int ageNumber = 0;
+        int ageNumber;
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(mContext, "El nombre es requerido", Toast.LENGTH_SHORT).show();
@@ -54,14 +60,14 @@ public class CreateUserDialogFragment extends DialogFragment {
         }
 
         if (TextUtils.isEmpty(selectedGender)) {
-            Toast.makeText(mContext, "El genero es requerid", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "El género es requerido", Toast.LENGTH_SHORT).show();
             return;
         }
 
         ageNumber = Integer.parseInt(age);
 
         User user = new User(name, ageNumber, selectedGender);
-        EventBus.getDefault().post(new CreateUserEvent(user));
+        EventBus.getDefault().post(new CreateUserEvent(user, drawView.getBitmap()));
         dismiss();
     }
 
@@ -71,6 +77,8 @@ public class CreateUserDialogFragment extends DialogFragment {
     EditText ageEditText;
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+    @BindView(R.id.draw_view)
+    DrawView drawView;
 
     @Nullable
     @Override
@@ -85,6 +93,7 @@ public class CreateUserDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        assert getDialog() != null;
         getDialog().setTitle("Datos del sujeto");
 
         radioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
@@ -103,7 +112,7 @@ public class CreateUserDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }

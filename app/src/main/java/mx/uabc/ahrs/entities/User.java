@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
 @Entity
 public class User {
 
@@ -24,6 +26,12 @@ public class User {
 
     @ColumnInfo(name = "dataset_filename")
     public String datasetFilename;
+
+    @ColumnInfo(name = "sign_filename")
+    public String signFilename;
+
+    @ColumnInfo(name = "signing_date")
+    public Date signingDate;
 
     public User(String name, int age, String gender) {
         this.name = name;

@@ -2,7 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/view_consent"
+        android:title="@string/ver_consentimiento" />
+    <item
         android:id="@+id/delete"
-        android:title="@string/borrar"/>
+        android:title="@string/borrar" />
 
 </menu>

@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".ConsentActivity"></activity>
         <activity
             android:name=".SensorActivity"
             android:screenOrientation="portrait" />

@@ -2,4 +2,12 @@
     <string name="app_name">AHRS</string>
     <string name="configuraciones">Configuraciones</string>
     <string name="borrar">Borrar</string>
+    <string name="consentimiento">Certifico que he sido informado(a) con claridad y veracidad debida respecto al ejercicio investigativo al cual se me ha invitado a participar y actúo consecuente, libre y voluntariamente como colaborador, contribuyendo a este procedimiento de forma activa</string>
+    <string name="ver_consentimiento">Ver consentimiento</string>
+    <string name="consentimiento_template">Yo, %1$s, %2$s.</string>
+    <string name="mydci">Programa de Maestría y Doctorado en  Ciencias e Ingeniería</string>
+    <string name="ciudad">Mexicali, Baja California</string>
+    <string name="universidad">Universidad Autónoma de Baja California</string>
+    <string name="firma">Firma</string>
+    <string name="generar_pdf">Generar PDF</string>
 </resources>

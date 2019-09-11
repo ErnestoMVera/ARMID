@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/consent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_white"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ConsentActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/universidad"
+        android:textAllCaps="true"
+        android:textColor="@color/color_black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/mydci"
+        android:textAllCaps="true"
+        android:textColor="@color/color_black"
+        android:textSize="22sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/ciudad"
+        android:textColor="@color/color_black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/fecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/color_black"
+        android:textSize="20sp"
+        tools:text="Fecha" />
+
+    <me.biubiubiu.justifytext.library.JustifyTextView
+        android:id="@+id/consentimiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/consentimiento_template"
+        android:textColor="@color/color_black"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/firma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        tools:ignore="ContentDescription" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="-48dp"
+        android:layout_marginRight="32dp"
+        android:background="@drawable/top_border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="4dp"
+            android:text="@string/firma"
+            android:textAllCaps="true"
+            android:textColor="@color/color_black"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        >
+        tools:ignore="UselessParent">
 
         <EditText
-            android:textColor="@color/textColorPrimary"
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nombre"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"
+            android:textColor="@color/textColorPrimary"
+            tools:ignore="Autofill,HardcodedText" />
 
         <EditText
-            android:textColor="@color/textColorPrimary"
             android:id="@+id/age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Edad"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="@color/textColorPrimary"
+            tools:ignore="Autofill,HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Género" />
+            android:text="Género"
+            tools:ignore="HardcodedText" />
 
         <RadioGroup
             android:id="@+id/radio_group"
@@ -38,31 +42,66 @@
             android:layout_height="wrap_content">
 
             <RadioButton
-                android:textColor="@color/textColorPrimary"
                 android:id="@+id/radio_masculino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Masculino" />
+                android:text="Masculino"
+                android:textColor="@color/textColorPrimary"
+                tools:ignore="HardcodedText" />
 
             <RadioButton
-                android:textColor="@color/textColorPrimary"
                 android:id="@+id/radio_femenino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Femenino" />
+                android:text="Femenino"
+                android:textColor="@color/textColorPrimary"
+                tools:ignore="HardcodedText" />
 
         </RadioGroup>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="@string/consentimiento"
+            android:textAlignment="center"
+            android:textColor="@color/textColorPrimary"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/border">
+
+            <com.divyanshu.draw.widget.DrawView
+                android:id="@+id/draw_view"
+                android:layout_width="match_parent"
+                android:layout_height="128dp" />
+
+        </FrameLayout>
+
         <Button
-            android:id="@+id/add_user_btn"
-            android:layout_gravity="center"
-            android:text="Agregar"
+            android:id="@+id/clear_btn"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Limpiar Firma"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/add_user_btn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Aceptar"
+            tools:ignore="HardcodedText" />
+
 
     </LinearLayout>
-
 
 
 </RelativeLayout>

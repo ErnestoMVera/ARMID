@@ -1,6 +1,7 @@
 package mx.uabc.ahrs;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -8,8 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,12 +20,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mx.uabc.ahrs.adapters.UsersAdapter;
@@ -44,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
         String trainingFilename = UUID.randomUUID().toString() + ".csv";
         String datasetFilename = UUID.randomUUID().toString() + ".csv";
+        String signFilename = UUID.randomUUID().toString() + ".jpg";
 
         File trainingFile = new File(getFilesDir(), trainingFilename);
 
         if (!trainingFile.exists()) {
             try {
-                boolean ignored = trainingFile.createNewFile();
+                trainingFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,14 +60,31 @@ public class MainActivity extends AppCompatActivity {
 
         if (!datasetFile.exists()) {
             try {
-                boolean ignored = datasetFile.createNewFile();
+                datasetFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+        File signFile = new File(getFilesDir(), signFilename);
+
+        if (!trainingFile.exists()) {
+            signFile.delete();
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(signFile);
+            event.getSign().compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         newUser.trainingFilename = trainingFilename;
         newUser.datasetFilename = datasetFilename;
+        newUser.signFilename = signFilename;
+        newUser.signingDate = Calendar.getInstance().getTime();
         databaseManager.getUserDao().insert(newUser);
         fetchUsers();
     }
@@ -134,13 +152,22 @@ public class MainActivity extends AppCompatActivity {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        User user = adapter.getItem(info.position);
 
         if (item.getItemId() == R.id.delete) {
-            deleteUser(adapter.getItem(info.position));
+            deleteUser(user);
             return true;
+        } else if (item.getItemId() == R.id.view_consent) {
+            viewConsent(user.uid);
         }
 
         return false;
+    }
+
+    private void viewConsent(int userId) {
+        Intent intent = new Intent(this, ConsentActivity.class);
+        intent.putExtra(ConsentActivity.USER_ID_PARAM, userId);
+        startActivity(intent);
     }
 
     private void deleteUser(User user) {
