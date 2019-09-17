@@ -202,14 +202,12 @@ public class RecollectionFragment extends Fragment {
 
             File datasetFile = new File(mContext.getFilesDir(), user.datasetFilename);
 
-            if (datasetFile.exists()) {
-                datasetFile.delete();
-            }
-
-            try {
-                datasetFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!datasetFile.exists()) {
+                try {
+                    datasetFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             try {
