@@ -20,7 +20,7 @@ public class RecollectionAdapter extends BaseAdapter {
 
     public RecollectionAdapter() {
         this.dataList = new ArrayList<>();
-        this.dataList.add(new Setting("Spot", "N/A"));
+        this.dataList.add(new Setting("Área", "N/A"));
         this.dataList.add(new Setting("Velocidad", "N/A"));
         this.dataList.add(new Setting("GPS", "N/A"));
     }
@@ -28,7 +28,7 @@ public class RecollectionAdapter extends BaseAdapter {
     public void addItem(RecollectionData recollectionData) {
 
         dataList.clear();
-        dataList.add(new Setting("Spot", DataPoint.getSpotName(recollectionData.getSpot())));
+        dataList.add(new Setting("Área", DataPoint.getSpotName(recollectionData.getSpot())));
         dataList.add(new Setting("Velocidad", (recollectionData.getSpeed() * 3.6) + " km/h"));
         dataList.add(new Setting("GPS", recollectionData.getLat() + ", " + recollectionData.getLng()));
         notifyDataSetChanged();

@@ -59,12 +59,7 @@ public class RecollectionFragment extends Fragment {
 
     private enum Comportamiento {
         LINEA_RECTA, VUELTA_IZQUIERDA, VUELTA_DERECHA, SEMAFORO, ESTACIONAMIENTO,
-        CAMBIO_CARRIL_IZQUIERDA, CAMBIO_CARRIL_DERECHA, ALTO_LINEA_RECTA,
-        ALTO_VUELTA_IZQUIERDA, ALTO_VUELTA_DERECHA
-    }
-
-    private enum Ejecucion {
-        NATURAL, SOLICITADO
+        CAMBIO_CARRIL_IZQUIERDA, CAMBIO_CARRIL_DERECHA
     }
 
     private enum TareaSecundaria {
@@ -78,7 +73,6 @@ public class RecollectionFragment extends Fragment {
     private Classifier classifier;
     private Location lastLocation;
     private String comportamiento;
-    private String ejecucion;
     private String tareaSecundaria;
 
     private Unbinder unbinder;
@@ -119,8 +113,7 @@ public class RecollectionFragment extends Fragment {
 
     @OnClick({R.id.action_straight, R.id.action_turn_left, R.id.action_turn_right,
             R.id.action_traffic_light, R.id.action_parking, R.id.action_change_left,
-            R.id.action_change_right, R.id.action_stop_straight, R.id.action_stop_left,
-            R.id.action_stop_right})
+            R.id.action_change_right})
     public void onComportamientoClicked(View view) {
 
         setFabBackgroundToDefault(comportamientosFABs);
@@ -148,29 +141,6 @@ public class RecollectionFragment extends Fragment {
             case R.id.action_change_right:
                 comportamiento = Comportamiento.CAMBIO_CARRIL_DERECHA.toString();
                 break;
-            case R.id.action_stop_straight:
-                comportamiento = Comportamiento.ALTO_LINEA_RECTA.toString();
-                break;
-            case R.id.action_stop_left:
-                comportamiento = Comportamiento.ALTO_VUELTA_IZQUIERDA.toString();
-                break;
-            case R.id.action_stop_right:
-                comportamiento = Comportamiento.ALTO_VUELTA_DERECHA.toString();
-                break;
-        }
-
-    }
-
-    @OnClick({R.id.natural, R.id.solicitado})
-    public void onEjecucionClicked(View view) {
-
-        setFabBackgroundToDefault(ejecucionFABs);
-        setFabBackgroundToSelected((FloatingActionButton) view);
-
-        if (view.getId() == R.id.natural) {
-            ejecucion = Ejecucion.NATURAL.toString();
-        } else {
-            ejecucion = Ejecucion.SOLICITADO.toString();
         }
     }
 
@@ -280,12 +250,8 @@ public class RecollectionFragment extends Fragment {
 
     @BindViews({R.id.action_straight, R.id.action_turn_left, R.id.action_turn_right,
             R.id.action_traffic_light, R.id.action_parking, R.id.action_change_left,
-            R.id.action_change_right, R.id.action_stop_straight, R.id.action_stop_left,
-            R.id.action_stop_right})
+            R.id.action_change_right})
     List<FloatingActionButton> comportamientosFABs;
-
-    @BindViews({R.id.natural, R.id.solicitado})
-    List<FloatingActionButton> ejecucionFABs;
 
     @BindViews({R.id.sin_copiloto, R.id.con_copiloto})
     List<FloatingActionButton> tareaSecundariaFABs;
@@ -299,10 +265,9 @@ public class RecollectionFragment extends Fragment {
         DataPoint dataPoint = new DataPoint(event.getX(), event.getY(), event.getZ(), -1);
         int spot = classifier.classifyDataPoint(dataPoint);
 
-        RecollectionData data = new RecollectionData(event.getX(), event.getY(), event.getZ(),
-                spot, event.getTimestamp(),
-                lastLocation.getSpeed(), lastLocation.getLatitude(), lastLocation.getLongitude(),
-                comportamiento, ejecucion, tareaSecundaria);
+        RecollectionData data = new RecollectionData(spot, lastLocation.getSpeed(),
+                lastLocation.getLatitude(), lastLocation.getLongitude()
+        );
 
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(data));
@@ -310,7 +275,7 @@ public class RecollectionFragment extends Fragment {
         String toSave = event.getX() + "," + event.getY() + "," + event.getZ() + "," + spot + ","
                 + System.currentTimeMillis() + "," + lastLocation.getSpeed() + ","
                 + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + ","
-                + comportamiento + "," + ejecucion + "," + tareaSecundaria + "\n";
+                + comportamiento + "," + tareaSecundaria + "\n";
 
         try {
 
@@ -375,6 +340,7 @@ public class RecollectionFragment extends Fragment {
         }
 
         try {
+
             FileReader reader = new FileReader(trainingFile);
             CSVReader csvReader = new CSVReader(reader);
 
@@ -409,15 +375,12 @@ public class RecollectionFragment extends Fragment {
     private void initButtons() {
 
         FloatingActionButton fab1 = comportamientosFABs.get(0);
-        FloatingActionButton fab2 = ejecucionFABs.get(0);
-        FloatingActionButton fab3 = tareaSecundariaFABs.get(0);
+        FloatingActionButton fab2 = tareaSecundariaFABs.get(0);
 
         setFabBackgroundToSelected(fab1);
         setFabBackgroundToSelected(fab2);
-        setFabBackgroundToSelected(fab3);
 
         comportamiento = Comportamiento.LINEA_RECTA.toString();
-        ejecucion = Ejecucion.NATURAL.toString();
         tareaSecundaria = TareaSecundaria.SIN_COPILOTO.toString();
     }
 

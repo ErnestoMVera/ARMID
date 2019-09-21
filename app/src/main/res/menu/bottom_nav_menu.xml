@@ -4,16 +4,21 @@
     <item
         android:id="@+id/navigation_training"
         android:icon="@drawable/ic_training"
-        android:title="Entrenamiento" />
+        android:title="@string/entrenamiento" />
 
     <item
         android:id="@+id/navigation_classificator"
         android:icon="@drawable/ic_classificator"
-        android:title="Clasificador" />
+        android:title="@string/clasificador" />
 
     <item
-       android:id="@+id/navigation_recollection"
+        android:id="@+id/navigation_validator"
+        android:icon="@drawable/ic_tick"
+        android:title="@string/validador" />
+
+    <item
+        android:id="@+id/navigation_recollection"
         android:icon="@drawable/ic_car"
-        android:title="Recolección" />
+        android:title="@string/recolecci_n" />
 
 </menu>

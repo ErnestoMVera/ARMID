@@ -24,15 +24,19 @@ import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.fragments.ClassifierFragment;
 import mx.uabc.ahrs.fragments.RecollectionFragment;
 import mx.uabc.ahrs.fragments.TrainingFragment;
+import mx.uabc.ahrs.fragments.ValidationFragment;
 import mx.uabc.ahrs.helpers.Quaternion;
 
 public class SensorActivity extends AppCompatActivity {
 
     public static final String USER_ID_PARAM = "userIdParam";
+    private static final int DELAY_IN_MILLISECONDS = 50;
+
     private int userId;
     private boolean isCalibrated;
-    SensorManager sensorManager;
-    Handler handler = new Handler();
+
+    private SensorManager sensorManager;
+    private Handler handler = new Handler();
 
     private Runnable runnableCode = new Runnable() {
         @Override
@@ -45,7 +49,7 @@ public class SensorActivity extends AppCompatActivity {
 
             EventBus.getDefault().post(new SensorReadingEvent(angles[0], angles[1], angles[2], timestamp));
 
-            handler.postDelayed(this, 200);
+            handler.postDelayed(this, DELAY_IN_MILLISECONDS);
         }
     };
 
@@ -61,7 +65,7 @@ public class SensorActivity extends AppCompatActivity {
             handler.post(runnableCode);
         } else if (sensorStreamingEvent.getAction() == SensorStreamingEvent.STOP) {
             handler.removeCallbacks(runnableCode);
-            Toast.makeText(this, "Sensado detenido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Censado detenido", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -129,6 +133,9 @@ public class SensorActivity extends AppCompatActivity {
                 case R.id.navigation_classificator:
                     changeFragment(ClassifierFragment.newInstance(userId));
                     return true;
+                case R.id.navigation_validator:
+                    changeFragment(ValidationFragment.newInstance(userId));
+                    return true;
                 case R.id.navigation_recollection:
                     changeFragment(RecollectionFragment.newInstance(userId));
                     return true;
@@ -145,7 +152,6 @@ public class SensorActivity extends AppCompatActivity {
             sensorManager = SensorManager.getInstance();
             sensorManager.startStreaming();
             Toast.makeText(this, "Sensor conectado", Toast.LENGTH_SHORT).show();
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this,

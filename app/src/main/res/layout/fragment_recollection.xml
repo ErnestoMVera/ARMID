@@ -58,22 +58,6 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_turn_right" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/action_traffic_light"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_traffic_light" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/action_parking"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_parking" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -98,54 +82,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_turn_to_right_arrow" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/action_stop_straight"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_stop_straight"
-                    app:maxImageSize="48dp" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/action_stop_left"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_stop_left"
-                    app:maxImageSize="48dp" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/action_stop_right"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_stop_right"
-                    app:maxImageSize="48dp" />
-
             </LinearLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ejecución del comportamiento"
-                android:textColor="@color/colorAccent"
-                android:textSize="18sp"
-                tools:ignore="HardcodedText" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -154,20 +91,20 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/natural"
+                    android:id="@+id/action_traffic_light"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_letter_n" />
+                    android:src="@drawable/ic_traffic_light" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/solicitado"
+                    android:id="@+id/action_parking"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_letter_s" />
+                    android:src="@drawable/ic_parking" />
 
             </LinearLayout>
 

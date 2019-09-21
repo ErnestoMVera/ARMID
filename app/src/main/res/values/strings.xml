@@ -9,5 +9,16 @@
     <string name="ciudad">Mexicali, Baja California</string>
     <string name="universidad">Universidad Autónoma de Baja California</string>
     <string name="firma">Firma</string>
-    <string name="generar_pdf">Generar PDF</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="entrenamiento">Entrenamiento</string>
+    <string name="clasificador">Clasificador</string>
+    <string name="recolecci_n">Recolección</string>
+    <string name="validador">Validador</string>
+    <string name="dashboard_radio">Dashboard - Radio</string>
+    <string name="retrovisor_derecho">Retrovisor derecho</string>
+    <string name="retrovisor_izquierdo">Retrovisor izquierdo</string>
+    <string name="retrovisor_central">Retrovisor central</string>
+    <string name="parabrisas">Parabrisas</string>
 </resources>
