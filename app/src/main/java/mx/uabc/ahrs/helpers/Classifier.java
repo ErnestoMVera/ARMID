@@ -1,5 +1,7 @@
 package mx.uabc.ahrs.helpers;
 
+import android.annotation.SuppressLint;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,7 +60,7 @@ public class Classifier {
 
     public int classifyDataPoint(DataPoint point) {
 
-        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        @SuppressLint("UseSparseArrays") HashMap<Integer, Integer> hashMap = new HashMap<>();
 
         List<Double> listDistance = calculateDistances(point);
 

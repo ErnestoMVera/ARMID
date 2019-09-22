@@ -20,8 +20,9 @@ public class SettingsAdapter extends BaseAdapter {
         this.settingList = new ArrayList<>();
     }
 
-    public void addItem(Setting setting) {
-        this.settingList.add(setting);
+    public void addItems(List<Setting> settings) {
+        this.settingList.clear();
+        this.settingList.addAll(settings);
         notifyDataSetChanged();
     }
 

@@ -5,21 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ClassifierFragment">
 
-    <TextView
-        android:id="@+id/timestamp_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Timestamp: N/A"
-        android:textColor="@color/textColorPrimary"
-        android:textSize="24sp"
-        tools:ignore="HardcodedText" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/classifier_btn"
-        android:layout_below="@id/timestamp_label"
         android:orientation="vertical">
 
         <TableLayout

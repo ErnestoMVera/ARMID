@@ -56,7 +56,6 @@ public class ClassifierFragment extends Fragment {
 
     private int readings, correctReadings, incorrectReadings;
 
-    @SuppressLint("SetTextI18n")
     @OnClick(R.id.classifier_btn)
     public void classify(View view) {
 
@@ -67,14 +66,9 @@ public class ClassifierFragment extends Fragment {
         String text = isRecording ? "Clasificar" : "Detener";
         button.setText(text);
         isRecording = !isRecording;
-
-        if (!isRecording) {
-            timestampLabel.setText("Timestamp: N/A");
-        }
     }
 
-    @BindView(R.id.timestamp_label)
-    TextView timestampLabel;
+    TextView yawTextView;
     @BindView(R.id.lecturas)
     TextView lecturas;
     @BindView(R.id.lecturasCorrectas)
@@ -152,7 +146,6 @@ public class ClassifierFragment extends Fragment {
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> {
             location.setText(String.valueOf(value));
-            timestampLabel.setText("Timestamp: " + ts);
             lecturas.setText("Lecturas: " + readings);
             lecturasCorrectas.setText("Clasificadas correctamente: " + correctReadings);
             lecturasIncorrectas.setText("Clasificadas incorrectamente: " + incorrectReadings);

@@ -6,38 +6,46 @@ import android.content.SharedPreferences;
 
 public class SharedPreferencesManager {
 
-    private static final String SAMPLING_RATE = "samplingRate";
-    private static final String BT_DEVICE_NAME = "btDeviceName";
+    private static final String SAMPLING_RATE = "SAMPLE_RATE_KEY";
+    private static final String HEAD_SENSOR_MAC_ADDRESS = "HEAD_SENSOR_MAC_KEY";
 
     private static volatile SharedPreferencesManager instance;
-    private SharedPreferences sharedPref;
+    private SharedPreferences mSharedPref;
 
-    public static SharedPreferencesManager getInstance(Context context) {
+    private SharedPreferencesManager(Context context) {
 
-        if (instance == null) {
-            instance = new SharedPreferencesManager();
-            instance.configSessionUtils(context);
-        }
+        mSharedPref = context.getSharedPreferences(context.getPackageName(),
+                Activity.MODE_PRIVATE);
 
-        return instance;
-    }
-
-    private void configSessionUtils(Context context) {
-        sharedPref = context.getSharedPreferences("AppPreferences", Activity.MODE_PRIVATE);
-    }
-
-    public void setSamplingRate(int samplingRate) {
-        SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
-        sharedPrefEditor.putInt(SAMPLING_RATE, samplingRate);
-        sharedPrefEditor.apply();
     }
 
     public int getSamplingRate() {
-        return sharedPref.getInt(SAMPLING_RATE, 10);
+        return mSharedPref.getInt(SAMPLING_RATE, 50);
     }
 
-    public String getBtDeviceName() {
-        return sharedPref.getString(BT_DEVICE_NAME, "YostLabsMBT");
+    public void setSamplingRate(int sampleRate) {
+        SharedPreferences.Editor prefsEditor = mSharedPref.edit();
+        prefsEditor.putInt(SAMPLING_RATE, sampleRate);
+        prefsEditor.apply();
+    }
+
+    public String getHeadSensorMacAddress() {
+        return mSharedPref.getString(HEAD_SENSOR_MAC_ADDRESS, "");
+    }
+
+    public void setHeadSensorMacAddress(String headSensorMacAddress) {
+        SharedPreferences.Editor prefsEditor = mSharedPref.edit();
+        prefsEditor.putString(HEAD_SENSOR_MAC_ADDRESS, headSensorMacAddress);
+        prefsEditor.apply();
+    }
+
+
+    public static SharedPreferencesManager getInstance(Context context) {
+
+        if (instance == null)
+            instance = new SharedPreferencesManager(context);
+
+        return instance;
     }
 
 }

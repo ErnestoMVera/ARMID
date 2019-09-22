@@ -34,12 +34,12 @@ public class DataPoint {
         this.y = y;
     }
 
-    public double getZ() {
-        return z;
-    }
-
     public void setZ(float z) {
         this.z = z;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     public int getSpot() {

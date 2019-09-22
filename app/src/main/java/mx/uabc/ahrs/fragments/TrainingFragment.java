@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -155,8 +156,8 @@ public class TrainingFragment extends Fragment {
 
             for (List<DataPoint> list : puntos) {
                 for (DataPoint dataPoint : list) {
-                    String data = dataPoint.getX() + "," + dataPoint.getY() + "," + dataPoint.getZ()
-                            + "," + dataPoint.getSpot() + "\n";
+                    String data = dataPoint.getX() + "," + dataPoint.getY() + ","
+                            + dataPoint.getZ() + "," + dataPoint.getSpot() + "\n";
                     fileOutputStream.write(data.getBytes());
                 }
             }
@@ -283,7 +284,7 @@ public class TrainingFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }

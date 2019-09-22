@@ -17,7 +17,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import mx.uabc.ahrs.data.DatabaseManager;
-import mx.uabc.ahrs.data.SensorManager;
+import mx.uabc.ahrs.data.TSSBTSensor;
+import mx.uabc.ahrs.data.SharedPreferencesManager;
 import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
@@ -30,26 +31,34 @@ import mx.uabc.ahrs.helpers.Quaternion;
 public class SensorActivity extends AppCompatActivity {
 
     public static final String USER_ID_PARAM = "userIdParam";
-    private static final int DELAY_IN_MILLISECONDS = 50;
 
     private int userId;
+    private int sensorDelay;
     private boolean isCalibrated;
 
-    private SensorManager sensorManager;
+    private SharedPreferencesManager sharedPreferencesManager;
+
+    private TSSBTSensor headSensor;
+
     private Handler handler = new Handler();
 
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
 
-            float[] q = sensorManager.getFilteredTaredOrientationQuaternion();
-            Quaternion quaternion = new Quaternion(q[3], q[0], q[1], q[2]);
-            double[] angles = quaternion.toEulerAngles();
+            float[] q1 = headSensor.getFilteredTaredOrientationQuaternion();
+            Quaternion headQuaternion = new Quaternion(q1[3], q1[0], q1[1], q1[2]);
+            double[] headAngles = headQuaternion.toEulerAngles();
+
+            double pitch = headAngles[0];
+            double roll = headAngles[1];
+            double yaw = headAngles[2];
+
             long timestamp = System.currentTimeMillis();
 
-            EventBus.getDefault().post(new SensorReadingEvent(angles[0], angles[1], angles[2], timestamp));
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, yaw, timestamp));
 
-            handler.postDelayed(this, DELAY_IN_MILLISECONDS);
+            handler.postDelayed(this, sensorDelay);
         }
     };
 
@@ -89,14 +98,15 @@ public class SensorActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (sensorManager == null)
+        if (headSensor == null)
             return false;
 
         if (item.getItemId() == R.id.tare_sensor) {
 
-            sensorManager.setTareCurrentOrient();
+            headSensor.setTareCurrentOrient();
+
             isCalibrated = true;
-            Toast.makeText(this, "Sensor calibrado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sensores calibrados", Toast.LENGTH_SHORT).show();
 
             return true;
         }
@@ -119,12 +129,16 @@ public class SensorActivity extends AppCompatActivity {
             return;
         }
 
+        sharedPreferencesManager
+                = SharedPreferencesManager.getInstance(this);
+
+        sensorDelay = sharedPreferencesManager.getSamplingRate();
+
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle(user.name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-
         bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.navigation_training:
@@ -142,16 +156,18 @@ public class SensorActivity extends AppCompatActivity {
             }
             return false;
         });
-
         bottomNavigationView.setSelectedItemId(R.id.navigation_training);
     }
 
     private void startBT() {
 
         try {
-            sensorManager = SensorManager.getInstance();
-            sensorManager.startStreaming();
-            Toast.makeText(this, "Sensor conectado", Toast.LENGTH_SHORT).show();
+
+            headSensor = new TSSBTSensor(sharedPreferencesManager.getHeadSensorMacAddress());
+            headSensor.startStreaming();
+
+            Toast.makeText(this, "Sensor de cabeza conectado", Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this,
@@ -163,9 +179,11 @@ public class SensorActivity extends AppCompatActivity {
 
     private void stopBT() {
 
-        if (sensorManager != null && sensorManager.isStreaming)
-            sensorManager.stopStreaming();
-
+        if (headSensor != null) {
+            if (headSensor.isStreaming)
+                headSensor.stopStreaming();
+            headSensor.close();
+        }
     }
 
     private void changeFragment(Fragment fragment) {

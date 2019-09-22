@@ -1,14 +1,19 @@
 <component name="ProjectDictionaryState">
   <dictionary name="josue">
     <words>
+      <w>aceptar</w>
       <w>ahrs</w>
       <w>archivo</w>
+      <w>autofill</w>
       <w>bulevard</w>
+      <w>cabeza</w>
       <w>calibración</w>
       <w>calibrado</w>
+      <w>calibrados</w>
       <w>calibrando</w>
       <w>calibrarlo</w>
       <w>cambio</w>
+      <w>cancelar</w>
       <w>carril</w>
       <w>censado</w>
       <w>ciudad</w>
@@ -26,17 +31,22 @@
       <w>copiloto</w>
       <w>correctamente</w>
       <w>correctas</w>
+      <w>crear</w>
       <w>dataset</w>
       <w>datos</w>
+      <w>definido</w>
       <w>derecha</w>
       <w>derecho</w>
       <w>detalles</w>
       <w>detener</w>
       <w>detenido</w>
+      <w>dirección</w>
       <w>edad</w>
       <w>ejecucion</w>
       <w>encontró</w>
       <w>entrenamiento</w>
+      <w>escribir</w>
+      <w>escritura</w>
       <w>estacionamiento</w>
       <w>exitosamente</w>
       <w>fecha</w>
@@ -44,23 +54,29 @@
       <w>firma</w>
       <w>generar</w>
       <w>grabar</w>
+      <w>guardado</w>
       <w>género</w>
       <w>hubo</w>
       <w>incorrectamente</w>
       <w>incorrectas</w>
       <w>izquierda</w>
       <w>izquierdo</w>
+      <w>lectura</w>
       <w>lecturas</w>
       <w>locación</w>
       <w>manejando</w>
       <w>masculino</w>
+      <w>muestreo</w>
       <w>mydci</w>
       <w>necesario</w>
       <w>nombre</w>
       <w>observar</w>
       <w>orden</w>
+      <w>otorgar</w>
       <w>parabrisas</w>
+      <w>permisos</w>
       <w>posible</w>
+      <w>posicionado</w>
       <w>precisión</w>
       <w>problema</w>
       <w>pudo</w>
@@ -68,6 +84,7 @@
       <w>recolección</w>
       <w>recolectar</w>
       <w>recta</w>
+      <w>referencia</w>
       <w>requerida</w>
       <w>requerido</w>
       <w>residencial</w>
@@ -78,18 +95,22 @@
       <w>seleccionados</w>
       <w>semaforo</w>
       <w>sensado</w>
+      <w>sensores</w>
       <w>solicitado</w>
       <w>subido</w>
       <w>subiendo</w>
       <w>subir</w>
       <w>sujeto</w>
       <w>tarea</w>
+      <w>tasa</w>
       <w>uabc</w>
       <w>universidad</w>
       <w>unparsed</w>
       <w>utilizar</w>
       <w>validación</w>
       <w>validador</w>
+      <w>vehiculo</w>
+      <w>vehículo</w>
       <w>velocidad</w>
       <w>vuelta</w>
       <w>yost</w>

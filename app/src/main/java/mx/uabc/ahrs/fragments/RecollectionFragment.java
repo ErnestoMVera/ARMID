@@ -272,7 +272,7 @@ public class RecollectionFragment extends Fragment {
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(data));
 
-        String toSave = event.getX() + "," + event.getY() + "," + event.getZ() + "," + spot + ","
+        String toSave = event.getX() + "," + event.getY() + "," + spot + ","
                 + System.currentTimeMillis() + "," + lastLocation.getSpeed() + ","
                 + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + ","
                 + comportamiento + "," + tareaSecundaria + "\n";
