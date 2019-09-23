@@ -2,9 +2,6 @@ package mx.uabc.ahrs.helpers;
 
 import android.annotation.SuppressLint;
 
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,14 +16,12 @@ public class Classifier {
     private int K;
     private DistanceAlgorithm distanceAlgorithm;
 
-    private double xMean, yMean, zMean, xSD, ySD, zSD;
-
     private List<DataPoint> listTrainData;
 
     public Classifier() {
 
-        K = 1;
-        distanceAlgorithm = new EuclideanDistance();
+        K = 3;
+        distanceAlgorithm = new ChebyshevDistance();
         listTrainData = new ArrayList<>();
 
     }
@@ -35,19 +30,14 @@ public class Classifier {
 
         List<Double> listDistance = new ArrayList<>();
 
-        double x1 = (point.getX() - xMean) / xSD;
-        double y1 = (point.getY() - yMean) / ySD;
-        double z1 = (point.getZ() - zMean) / zSD;
+        double x1 = point.getX();
+        double y1 = point.getY();
 
         for (DataPoint dataPoint : listTrainData) {
 
-            double x2 = (dataPoint.getX() - xMean) / xSD;
-            double y2 = (dataPoint.getY() - yMean) / ySD;
-            double z2 = (dataPoint.getZ() - zMean) / zSD;
-
+            double x2 = dataPoint.getX();
+            double y2 = dataPoint.getY();
             double distance = distanceAlgorithm.calculateDistance(x1, y1, x2, y2);
-//            double distance = distanceAlgorithm.calculateDistance(x1, y1, z1, x2, y2, z2);
-
             listDistance.add(distance);
         }
 
@@ -109,32 +99,32 @@ public class Classifier {
 
     public void addTrainingData(List<DataPoint> dataPoints) {
         listTrainData.addAll(dataPoints);
-        calculateMeanAndStdDeviation();
+        //calculateMeanAndStdDeviation();
     }
 
-    private void calculateMeanAndStdDeviation() {
-
-        double[] xValues = new double[listTrainData.size()];
-        double[] yValues = new double[listTrainData.size()];
-        double[] zValues = new double[listTrainData.size()];
-
-        for (int i = 0; i < listTrainData.size(); i++) {
-            DataPoint d = listTrainData.get(i);
-            xValues[i] = d.getX();
-            yValues[i] = d.getY();
-            zValues[i] = d.getZ();
-        }
-
-        xMean = StatUtils.mean(xValues);
-        yMean = StatUtils.mean(yValues);
-        zMean = StatUtils.mean(zValues);
-
-        StandardDeviation sd
-                = new StandardDeviation(false);
-
-        xSD = sd.evaluate(xValues);
-        ySD = sd.evaluate(yValues);
-        zSD = sd.evaluate(zValues);
-    }
+//    private void calculateMeanAndStdDeviation() {
+//
+//        double[] xValues = new double[listTrainData.size()];
+//        double[] yValues = new double[listTrainData.size()];
+//        double[] zValues = new double[listTrainData.size()];
+//
+//        for (int i = 0; i < listTrainData.size(); i++) {
+//            DataPoint d = listTrainData.get(i);
+//            xValues[i] = d.getX();
+//            yValues[i] = d.getY();
+//            zValues[i] = d.getZ();
+//        }
+//
+//        xMean = StatUtils.mean(xValues);
+//        yMean = StatUtils.mean(yValues);
+//        zMean = StatUtils.mean(zValues);
+//
+//        StandardDeviation sd
+//                = new StandardDeviation(false);
+//
+//        xSD = sd.evaluate(xValues);
+//        ySD = sd.evaluate(yValues);
+//        zSD = sd.evaluate(zValues);
+//    }
 }
 
