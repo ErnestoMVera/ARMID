@@ -304,6 +304,8 @@ public class ValidationFragment extends Fragment {
             return;
         }
 
+        List<DataPoint> dataPointList = new ArrayList<>();
+
         try {
             FileReader reader = new FileReader(trainingFile);
             CSVReader csvReader = new CSVReader(reader);
@@ -321,8 +323,10 @@ public class ValidationFragment extends Fragment {
 
                 DataPoint dataPoint = new DataPoint(x, y, z, spot);
 
-                classifier.addTrainingData(dataPoint);
+                dataPointList.add(dataPoint);
             }
+
+            classifier.addTrainingData(dataPointList);
 
         } catch (FileNotFoundException e) {
             Toast.makeText(mContext,

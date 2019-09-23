@@ -247,7 +247,7 @@ public class TSSBTSensor {
             }
         }
 
-        byte[] send_data = new byte[]{(byte) 0x00};
+        byte[] send_data = new byte[]{(byte) 0x06};
         write(send_data);
         byte[] response = read(16);
         reentrantLock.unlock();

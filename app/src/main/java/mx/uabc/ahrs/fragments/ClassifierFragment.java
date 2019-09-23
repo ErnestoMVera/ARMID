@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -202,6 +203,8 @@ public class ClassifierFragment extends Fragment {
             return;
         }
 
+        List<DataPoint> dataPointList = new ArrayList<>();
+
         try {
             FileReader reader = new FileReader(trainingFile);
             CSVReader csvReader = new CSVReader(reader);
@@ -219,8 +222,10 @@ public class ClassifierFragment extends Fragment {
 
                 DataPoint dataPoint = new DataPoint(x, y, z, spot);
 
-                classifier.addTrainingData(dataPoint);
+                dataPointList.add(dataPoint);
             }
+
+            classifier.addTrainingData(dataPointList);
 
         } catch (FileNotFoundException e) {
             Toast.makeText(mContext,

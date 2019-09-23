@@ -86,8 +86,14 @@ public class SettingsActivity extends AppCompatActivity {
                 case 2:
                     showDevicesDialog();
                     break;
+                case 3:
+                    testDevice();
             }
         });
+    }
+
+    private void testDevice() {
+        startActivity(new Intent(this, DeviceTestActivity.class));
     }
 
     private void showSamplingDialog() {
@@ -124,6 +130,8 @@ public class SettingsActivity extends AppCompatActivity {
                 sharedPreferencesManager.getSamplingRate() + " Hz"));
         settingsList.add(new Setting("Dirección MAC del sensor",
                 sharedPreferencesManager.getHeadSensorMacAddress()));
+        settingsList.add(new Setting("Dispositivo Bluetooth",
+                "Prueba de ángulos de inclinación"));
 
         settingsAdapter.addItems(settingsList);
     }

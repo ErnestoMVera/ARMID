@@ -10,7 +10,6 @@
     <string name="universidad">Universidad Autónoma de Baja California</string>
     <string name="firma">Firma</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="entrenamiento">Entrenamiento</string>
     <string name="clasificador">Clasificador</string>
@@ -21,4 +20,7 @@
     <string name="retrovisor_izquierdo">Retrovisor izquierdo</string>
     <string name="retrovisor_central">Retrovisor central</string>
     <string name="parabrisas">Parabrisas</string>
+
+    <string name="orientation_angle">%1$s: %2$.2f</string>
+
 </resources>

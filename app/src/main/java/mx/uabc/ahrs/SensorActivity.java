@@ -34,7 +34,7 @@ public class SensorActivity extends AppCompatActivity {
 
     private int userId;
     private int sensorDelay;
-    private boolean isCalibrated;
+    private boolean isCalibrated = true;
 
     private SharedPreferencesManager sharedPreferencesManager;
 
