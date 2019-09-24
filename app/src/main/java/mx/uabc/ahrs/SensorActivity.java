@@ -2,12 +2,8 @@ package mx.uabc.ahrs;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -16,9 +12,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.Date;
+
 import mx.uabc.ahrs.data.DatabaseManager;
-import mx.uabc.ahrs.data.TSSBTSensor;
 import mx.uabc.ahrs.data.SharedPreferencesManager;
+import mx.uabc.ahrs.data.TSSBTSensor;
 import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
@@ -27,21 +25,18 @@ import mx.uabc.ahrs.fragments.RecollectionFragment;
 import mx.uabc.ahrs.fragments.TrainingFragment;
 import mx.uabc.ahrs.fragments.ValidationFragment;
 import mx.uabc.ahrs.helpers.Quaternion;
+import mx.uabc.ahrs.helpers.Utils;
 
 public class SensorActivity extends AppCompatActivity {
 
     public static final String USER_ID_PARAM = "userIdParam";
 
     private int userId;
-    private int sensorDelay;
-    private boolean isCalibrated = true;
+    private long sensorDelay;
 
     private SharedPreferencesManager sharedPreferencesManager;
-
     private TSSBTSensor headSensor;
-
     private Handler handler = new Handler();
-
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
@@ -65,11 +60,6 @@ public class SensorActivity extends AppCompatActivity {
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
-        if (!isCalibrated) {
-            showCalibrationDialog();
-            return;
-        }
-
         if (sensorStreamingEvent.getAction() == SensorStreamingEvent.START) {
             handler.post(runnableCode);
         } else if (sensorStreamingEvent.getAction() == SensorStreamingEvent.STOP) {
@@ -77,41 +67,6 @@ public class SensorActivity extends AppCompatActivity {
             Toast.makeText(this, "Censado detenido", Toast.LENGTH_SHORT).show();
         }
 
-    }
-
-    private void showCalibrationDialog() {
-
-        new AlertDialog.Builder(this)
-                .setTitle("Calibración del sensor")
-                .setMessage("Antes de utilizar el sensor es necesario calibrarlo")
-                .setPositiveButton(android.R.string.yes, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sensor_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (headSensor == null)
-            return false;
-
-        if (item.getItemId() == R.id.tare_sensor) {
-
-            headSensor.setTareCurrentOrient();
-
-            isCalibrated = true;
-            Toast.makeText(this, "Sensores calibrados", Toast.LENGTH_SHORT).show();
-
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -132,7 +87,8 @@ public class SensorActivity extends AppCompatActivity {
         sharedPreferencesManager
                 = SharedPreferencesManager.getInstance(this);
 
-        sensorDelay = sharedPreferencesManager.getSamplingRate();
+        sensorDelay = Utils
+                .hertzToMilliseconds(sharedPreferencesManager.getSamplingRate());
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle(user.name);

@@ -21,7 +21,7 @@ public class Classifier {
     public Classifier() {
 
         K = 3;
-        distanceAlgorithm = new ChebyshevDistance();
+        distanceAlgorithm = new EuclideanDistance();
         listTrainData = new ArrayList<>();
 
     }

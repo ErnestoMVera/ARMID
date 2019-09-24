@@ -21,19 +21,16 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.opencsv.CSVReader;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +42,7 @@ import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 
 public class ValidationFragment extends Fragment {
@@ -150,13 +148,12 @@ public class ValidationFragment extends Fragment {
                 ref.append(p).append("_");
             }
 
-            ref.append(UUID.randomUUID().toString());
-            ref.append("_");
-            ref.append("validation.csv");
+            ref.append(System.currentTimeMillis()).append("_validation.csv");
 
             String fileName = ref.toString();
 
-            File validationFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+            File validationFile = new File(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
 
             if (!validationFile.exists()) {
                 try {
@@ -171,11 +168,16 @@ public class ValidationFragment extends Fragment {
                 fileOutputStream = new FileOutputStream(validationFile);
 
                 String header = "";
-                for (int spot : spots) {
-                    header = header.concat(spot + ",");
+
+                for (int i = 0; i < spots.size(); i++) {
+
+                    header = header.concat(String.valueOf(spots.get(i)));
+
+                    if (i < spots.size() - 1)
+                        header = header.concat(",");
                 }
 
-                header = header.concat("timestamp,spot,speed\n");
+                header = header.concat("\ntimestamp,spot,speed,lat,lng\n");
 
                 fileOutputStream.write(header.getBytes());
 
@@ -208,9 +210,9 @@ public class ValidationFragment extends Fragment {
         DataPoint dataPoint = new DataPoint(event.getX(), event.getY(), event.getZ(), -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
 
-        double speed = lastLocation.getSpeed() * 3.6;
-
-        String text = event.getTimestamp() + "," + predictedSpot + "," + speed + "\n";
+        String text = mContext.getString(R.string.validation_template,
+                event.getTimestamp(), predictedSpot, lastLocation.getSpeed(),
+                lastLocation.getLatitude(), lastLocation.getLongitude());
 
         try {
             fileOutputStream.write(text.getBytes());
@@ -218,7 +220,7 @@ public class ValidationFragment extends Fragment {
             e.printStackTrace();
         }
 
-        updateDetallesTextView(true, predictedSpot, speed);
+        updateDetallesTextView(true, predictedSpot, lastLocation.getSpeed());
     }
 
     public ValidationFragment() {
@@ -227,7 +229,9 @@ public class ValidationFragment extends Fragment {
 
     private void updateDetallesTextView(boolean isRecording, int spot, double speed) {
 
-        String text = isRecording ? DataPoint.getSpotName(spot) + "\n" + speed : "";
+        String speedText = String.format(Locale.getDefault(), "%.2f", speed) + " metros/segundo";
+
+        String text = isRecording ? DataPoint.getSpotName(spot) + "\n" + speedText : "";
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> detallesTextView.setText(text));
 
@@ -304,40 +308,8 @@ public class ValidationFragment extends Fragment {
             return;
         }
 
-        List<DataPoint> dataPointList = new ArrayList<>();
-
-        try {
-            FileReader reader = new FileReader(trainingFile);
-            CSVReader csvReader = new CSVReader(reader);
-
-            String[] nextRecord;
-            while ((nextRecord = csvReader.readNext()) != null) {
-
-                double x, y, z;
-                int spot;
-
-                x = Double.parseDouble(nextRecord[0]);
-                y = Double.parseDouble(nextRecord[1]);
-                z = Double.parseDouble(nextRecord[2]);
-                spot = Integer.parseInt(nextRecord[3]);
-
-                DataPoint dataPoint = new DataPoint(x, y, z, spot);
-
-                dataPointList.add(dataPoint);
-            }
-
-            classifier.addTrainingData(dataPointList);
-
-        } catch (FileNotFoundException e) {
-            Toast.makeText(mContext,
-                    "No se encontró el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(mContext,
-                    "No se pudo leer el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
+        List<DataPoint> trainingDataSetList = Utils.getTrainingDataSet(trainingFile);
+        classifier.addTrainingData(trainingDataSetList);
     }
 
     @Override

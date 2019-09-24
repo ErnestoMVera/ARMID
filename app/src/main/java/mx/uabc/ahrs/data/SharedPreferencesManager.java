@@ -8,6 +8,7 @@ public class SharedPreferencesManager {
 
     private static final String SAMPLING_RATE = "SAMPLE_RATE_KEY";
     private static final String HEAD_SENSOR_MAC_ADDRESS = "HEAD_SENSOR_MAC_KEY";
+    private static final String CAR_SENSOR_MAC_ADDRESS = "CAR_SENSOR_MAC_KEY";
 
     private static volatile SharedPreferencesManager instance;
     private SharedPreferences mSharedPref;
@@ -36,6 +37,16 @@ public class SharedPreferencesManager {
     public void setHeadSensorMacAddress(String headSensorMacAddress) {
         SharedPreferences.Editor prefsEditor = mSharedPref.edit();
         prefsEditor.putString(HEAD_SENSOR_MAC_ADDRESS, headSensorMacAddress);
+        prefsEditor.apply();
+    }
+
+    public String getCarSensorMacAddress() {
+        return mSharedPref.getString(CAR_SENSOR_MAC_ADDRESS, "");
+    }
+
+    public void setCarSensorMacAddress(String carSensorMacAddress) {
+        SharedPreferences.Editor prefsEditor = mSharedPref.edit();
+        prefsEditor.putString(CAR_SENSOR_MAC_ADDRESS, carSensorMacAddress);
         prefsEditor.apply();
     }
 

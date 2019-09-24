@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.models.DataPoint;
@@ -28,8 +29,12 @@ public class RecollectionAdapter extends BaseAdapter {
     public void addItem(RecollectionData recollectionData) {
 
         dataList.clear();
+
+        double speed = recollectionData.getSpeed() * 3.6;
+        String speedText = String.format(Locale.getDefault(), "%.2f", speed) + " km/h";
+
         dataList.add(new Setting("Área", DataPoint.getSpotName(recollectionData.getSpot())));
-        dataList.add(new Setting("Velocidad", (recollectionData.getSpeed() * 3.6) + " km/h"));
+        dataList.add(new Setting("Velocidad", speedText));
         dataList.add(new Setting("GPS", recollectionData.getLat() + ", " + recollectionData.getLng()));
         notifyDataSetChanged();
     }

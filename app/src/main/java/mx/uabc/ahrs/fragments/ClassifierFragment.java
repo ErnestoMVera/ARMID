@@ -16,16 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.opencsv.CSVReader;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,6 +33,7 @@ import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 
 public class ClassifierFragment extends Fragment {
@@ -203,39 +198,9 @@ public class ClassifierFragment extends Fragment {
             return;
         }
 
-        List<DataPoint> dataPointList = new ArrayList<>();
+        List<DataPoint> trainingDataSet = Utils.getTrainingDataSet(trainingFile);
+        classifier.addTrainingData(trainingDataSet);
 
-        try {
-            FileReader reader = new FileReader(trainingFile);
-            CSVReader csvReader = new CSVReader(reader);
-
-            String[] nextRecord;
-            while ((nextRecord = csvReader.readNext()) != null) {
-
-                double x, y, z;
-                int spot;
-
-                x = Double.parseDouble(nextRecord[0]);
-                y = Double.parseDouble(nextRecord[1]);
-                z = Double.parseDouble(nextRecord[2]);
-                spot = Integer.parseInt(nextRecord[3]);
-
-                DataPoint dataPoint = new DataPoint(x, y, z, spot);
-
-                dataPointList.add(dataPoint);
-            }
-
-            classifier.addTrainingData(dataPointList);
-
-        } catch (FileNotFoundException e) {
-            Toast.makeText(mContext,
-                    "No se encontró el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(mContext,
-                    "No se pudo leer el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
     }
 
     @Override

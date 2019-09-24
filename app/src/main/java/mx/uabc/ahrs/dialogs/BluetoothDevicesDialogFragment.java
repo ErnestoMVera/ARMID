@@ -27,10 +27,33 @@ import mx.uabc.ahrs.models.Setting;
 
 public class BluetoothDevicesDialogFragment extends DialogFragment {
 
+    private static final String SENSOR_REFERENCE = "SENSOR_REFERENCE_PARAM";
+
+    public static final String HEAD_REFERENCE = "HEAD_REFERENCE_PARAM";
+    public static final String CAR_REFERENCE = "CAR_REFERENCE_PARAM";
+
     private SettingsAdapter adapter;
+    private String reference;
 
     public BluetoothDevicesDialogFragment() {
         //Required empty constructor
+    }
+
+    public static BluetoothDevicesDialogFragment newInstance(String reference) {
+
+        BluetoothDevicesDialogFragment myFragment = new BluetoothDevicesDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(SENSOR_REFERENCE, reference);
+        myFragment.setArguments(args);
+        return myFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        assert args != null;
+        reference = args.getString(SENSOR_REFERENCE, HEAD_REFERENCE);
     }
 
     @Nullable
@@ -49,8 +72,13 @@ public class BluetoothDevicesDialogFragment extends DialogFragment {
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((adapterView, view1, i, l) -> {
             Setting setting = adapter.getItem(i);
+
+            BluetoothSelectedEvent.Reference ref = reference.equals(HEAD_REFERENCE) ?
+                    BluetoothSelectedEvent.Reference.HEAD : BluetoothSelectedEvent.Reference.CAR;
+
             EventBus.getDefault()
-                    .post(new BluetoothSelectedEvent(setting.getValue()));
+                    .post(new BluetoothSelectedEvent(setting.getValue(), ref));
+
             dismiss();
         });
         fetchDevices();

@@ -28,17 +28,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.opencsv.CSVReader;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,6 +49,7 @@ import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 import mx.uabc.ahrs.models.RecollectionData;
 
@@ -182,8 +179,14 @@ public class RecollectionFragment extends Fragment {
             }
 
             try {
-                fileOutputStream = new FileOutputStream(datasetFile);
-            } catch (FileNotFoundException e) {
+
+                fileOutputStream = new FileOutputStream(datasetFile, true);
+
+                String header = "timestamp,x,y,spot,speed,lat,lng,comportamiento,tarea_secundaria\n";
+
+                fileOutputStream.write(header.getBytes());
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -273,10 +276,9 @@ public class RecollectionFragment extends Fragment {
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(data));
 
-        String toSave = event.getX() + "," + event.getY() + "," + spot + ","
-                + System.currentTimeMillis() + "," + lastLocation.getSpeed() + ","
-                + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + ","
-                + comportamiento + "," + tareaSecundaria + "\n";
+        String toSave = mContext.getString(R.string.recollection_template, event.getTimestamp(),
+                event.getX(), event.getY(), spot, lastLocation.getSpeed(), lastLocation.getLatitude(),
+                lastLocation.getLongitude(), comportamiento, tareaSecundaria);
 
         try {
 
@@ -340,39 +342,8 @@ public class RecollectionFragment extends Fragment {
             return;
         }
 
-        List<DataPoint> dataPointList = new ArrayList<>();
-
-        try {
-            FileReader reader = new FileReader(trainingFile);
-            CSVReader csvReader = new CSVReader(reader);
-
-            String[] nextRecord;
-            while ((nextRecord = csvReader.readNext()) != null) {
-
-                double x, y, z;
-                int spot;
-
-                x = Double.parseDouble(nextRecord[0]);
-                y = Double.parseDouble(nextRecord[1]);
-                z = Double.parseDouble(nextRecord[2]);
-                spot = Integer.parseInt(nextRecord[3]);
-
-                DataPoint dataPoint = new DataPoint(x, y, z, spot);
-
-                dataPointList.add(dataPoint);
-            }
-
-            classifier.addTrainingData(dataPointList);
-
-        } catch (FileNotFoundException e) {
-            Toast.makeText(mContext,
-                    "No se encontró el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(mContext,
-                    "No se pudo leer el dataset", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        List<DataPoint> trainingDataSet = Utils.getTrainingDataSet(trainingFile);
+        classifier.addTrainingData(trainingDataSet);
 
     }
 

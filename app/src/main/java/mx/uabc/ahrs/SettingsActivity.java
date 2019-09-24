@@ -3,7 +3,6 @@ package mx.uabc.ahrs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -46,7 +45,10 @@ public class SettingsActivity extends AppCompatActivity {
     @Subscribe
     public void onBluetoothSelectedEvent(BluetoothSelectedEvent event) {
 
-        sharedPreferencesManager.setHeadSensorMacAddress(event.getMacAddress());
+        if (event.getReference().equals(BluetoothSelectedEvent.Reference.HEAD))
+            sharedPreferencesManager.setHeadSensorMacAddress(event.getMacAddress());
+        else if (event.getReference().equals(BluetoothSelectedEvent.Reference.CAR))
+            sharedPreferencesManager.setCarSensorMacAddress(event.getMacAddress());
 
         fetchSettings();
     }
@@ -84,9 +86,12 @@ public class SettingsActivity extends AppCompatActivity {
                     showSamplingDialog();
                     break;
                 case 2:
-                    showDevicesDialog();
+                    showDevicesDialog(BluetoothDevicesDialogFragment.HEAD_REFERENCE);
                     break;
                 case 3:
+                    showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
+                    break;
+                case 4:
                     testDevice();
             }
         });
@@ -125,13 +130,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         List<Setting> settingsList = new ArrayList<>();
 
-        settingsList.add(new Setting("Otorgar permisos", "Locación, lectura y escritura"));
+        settingsList.add(new Setting("Otorgar permisos",
+                "Locación, lectura y escritura"));
         settingsList.add(new Setting("Tasa de muestreo",
                 sharedPreferencesManager.getSamplingRate() + " Hz"));
         settingsList.add(new Setting("Dirección MAC del sensor",
                 sharedPreferencesManager.getHeadSensorMacAddress()));
-        settingsList.add(new Setting("Dispositivo Bluetooth",
-                "Prueba de ángulos de inclinación"));
+//        settingsList.add(new Setting("Dirección MAC del sensor del vehículo",
+//                sharedPreferencesManager.getCarSensorMacAddress()));
+//        settingsList.add(new Setting("Dispositivo Bluetooth",
+//                "Prueba de ángulos de inclinación"));
 
         settingsAdapter.addItems(settingsList);
     }
@@ -158,10 +166,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    private void showDevicesDialog() {
+    private void showDevicesDialog(String reference) {
         FragmentManager fm = getSupportFragmentManager();
         BluetoothDevicesDialogFragment dialogFragment
-                = new BluetoothDevicesDialogFragment();
+                = BluetoothDevicesDialogFragment.newInstance(reference);
         dialogFragment.show(fm, "dialog_fragment");
     }
 
