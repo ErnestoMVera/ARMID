@@ -13,6 +13,15 @@
         android:layout_above="@id/buttonPanel"
         android:orientation="vertical">
 
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:text="Sensor Bluetooth"
+            android:textAlignment="center"
+            tools:ignore="HardcodedText" />
+
         <TextView
             android:id="@+id/xTextView"
             style="@style/TextAppearance.AppCompat.Headline"
@@ -50,7 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:enabled="true"
-            android:text="Recolectar" />
+            android:text="Recolectar"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 

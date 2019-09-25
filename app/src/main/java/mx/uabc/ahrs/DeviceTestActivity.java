@@ -19,9 +19,11 @@ public class DeviceTestActivity extends AppCompatActivity {
 
     private int sensorDelay;
     private TSSBTSensor sensor;
-    private TSSBTSensor carSensor;
     private SharedPreferencesManager sharedPreferencesManager;
     private boolean isCollecting;
+
+    private float mPitch, mRoll;
+    private int mYaw;
 
     @BindView(R.id.xTextView)
     TextView xTextView;
@@ -37,10 +39,11 @@ public class DeviceTestActivity extends AppCompatActivity {
 
         isCollecting = !isCollecting;
 
-        if (isCollecting)
+        if (isCollecting) {
             handler.post(runnableCode);
-        else
+        } else {
             handler.removeCallbacks(runnableCode);
+        }
     }
 
     private Handler handler = new Handler();
@@ -53,21 +56,9 @@ public class DeviceTestActivity extends AppCompatActivity {
             Quaternion headQuaternion = new Quaternion(q1[3], q1[0], q1[1], q1[2]);
             double[] headAngles = headQuaternion.toEulerAngles();
 
-            float[] q2 = carSensor.getFilteredTaredOrientationQuaternion();
-            Quaternion carQuaternion = new Quaternion(q2[3], q2[0], q2[1], q2[2]);
-            double[] carAngles = carQuaternion.toEulerAngles();
-
-            double pitch = headAngles[0];
-            double roll = headAngles[1];
-
-            double headYaw = headAngles[2];
-            double carYaw = carAngles[2];
-
-            double yaw = Math.abs(headYaw) - Math.abs(carYaw);
-
-            String x = getString(R.string.orientation_angle, "X", pitch);
-            String y = getString(R.string.orientation_angle, "Y", roll);
-            String z = getString(R.string.orientation_angle, "Z", yaw);
+            String x = getString(R.string.orientation_angle, "X", headAngles[0]);
+            String y = getString(R.string.orientation_angle, "Y", headAngles[1]);
+            String z = getString(R.string.orientation_angle, "Z", headAngles[2]);
 
             xTextView.setText(x);
             yTextView.setText(y);
@@ -108,11 +99,6 @@ public class DeviceTestActivity extends AppCompatActivity {
 
             sensor.startStreaming();
 
-            carSensor = new TSSBTSensor(sharedPreferencesManager
-                    .getCarSensorMacAddress());
-
-            carSensor.startStreaming();
-
             Toast.makeText(this, "Sensores conectados", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
@@ -132,11 +118,6 @@ public class DeviceTestActivity extends AppCompatActivity {
             sensor.close();
         }
 
-        if (carSensor != null) {
-            if (carSensor.isStreaming)
-                carSensor.stopStreaming();
-            carSensor.close();
-        }
     }
 
 }

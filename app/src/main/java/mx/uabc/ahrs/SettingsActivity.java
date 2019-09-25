@@ -88,11 +88,11 @@ public class SettingsActivity extends AppCompatActivity {
                 case 2:
                     showDevicesDialog(BluetoothDevicesDialogFragment.HEAD_REFERENCE);
                     break;
-                case 3:
-                    showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
-                    break;
-                case 4:
-                    testDevice();
+//                case 3:
+//                    showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
+//                    break;
+//                case 4:
+//                    testDevice();
             }
         });
     }
