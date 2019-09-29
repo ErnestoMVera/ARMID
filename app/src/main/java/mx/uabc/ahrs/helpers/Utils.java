@@ -28,15 +28,16 @@ public class Utils {
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
 
-                double x, y, z;
+                double pitch, roll, y, z;
                 int spot;
 
-                x = Double.parseDouble(nextRecord[0]);
-                y = Double.parseDouble(nextRecord[1]);
-                z = Double.parseDouble(nextRecord[2]);
-                spot = Integer.parseInt(nextRecord[3]);
+                pitch = Double.parseDouble(nextRecord[0]);
+                roll = Double.parseDouble(nextRecord[1]);
+                y = Double.parseDouble(nextRecord[2]);
+                z = Double.parseDouble(nextRecord[3]);
+                spot = Integer.parseInt(nextRecord[4]);
 
-                DataPoint dataPoint = new DataPoint(x, y, z, spot);
+                DataPoint dataPoint = new DataPoint(pitch, roll, y, z, spot);
 
                 dataPointList.add(dataPoint);
             }

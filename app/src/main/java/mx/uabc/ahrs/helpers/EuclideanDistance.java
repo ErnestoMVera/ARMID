@@ -18,4 +18,15 @@ public class EuclideanDistance implements DistanceAlgorithm {
         double zSquare = Math.pow(z1 - z2, 2);
         return Math.sqrt(xSquare + ySquare + zSquare);
     }
+
+    @Override
+    public double calculateDistance(double pitch1, double roll1, double y1, double z1,
+                                    double pitch2, double roll2, double y2, double z2) {
+
+        double pitchSquare = Math.pow(pitch1 - pitch2, 2);
+        double rollSquare = Math.pow(roll1 - roll2, 2);
+        double ySquare = Math.pow(y1 - y2, 2);
+        double zSquare = Math.pow(z1 - z2, 2);
+        return Math.sqrt(pitchSquare + rollSquare + ySquare + zSquare);
+    }
 }

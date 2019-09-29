@@ -2,20 +2,26 @@ package mx.uabc.ahrs.events;
 
 public class SensorReadingEvent {
 
-    private double x;
+    private double pitch;
+    private double roll;
     private double y;
     private double z;
     private long timestamp;
 
-    public SensorReadingEvent(double x, double y, double z, long timestamp) {
-        this.x = x;
+    public SensorReadingEvent(double pitch, double roll, double y, double z, long timestamp) {
+        this.pitch = pitch;
+        this.roll = roll;
         this.y = y;
         this.z = z;
         this.timestamp = timestamp;
     }
 
-    public double getX() {
-        return x;
+    public double getPitch() {
+        return pitch;
+    }
+
+    public double getRoll() {
+        return roll;
     }
 
     public double getY() {

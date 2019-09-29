@@ -19,11 +19,12 @@ public class DeviceTestActivity extends AppCompatActivity {
 
     private int sensorDelay;
     private TSSBTSensor sensor;
+    private TSSBTSensor carSensor;
     private SharedPreferencesManager sharedPreferencesManager;
     private boolean isCollecting;
 
     private float mPitch, mRoll;
-    private int mYaw;
+    private double lastY, lastZ;
 
     @BindView(R.id.xTextView)
     TextView xTextView;
@@ -31,6 +32,12 @@ public class DeviceTestActivity extends AppCompatActivity {
     TextView yTextView;
     @BindView(R.id.zTextView)
     TextView zTextView;
+    @BindView(R.id.x2TextView)
+    TextView x2TextView;
+    @BindView(R.id.y2TextView)
+    TextView y2TextView;
+    @BindView(R.id.z2TextView)
+    TextView z2TextView;
     @BindView(R.id.collectBtn)
     Button collectButton;
 
@@ -64,6 +71,18 @@ public class DeviceTestActivity extends AppCompatActivity {
             yTextView.setText(y);
             zTextView.setText(z);
 
+            float[] q2 = carSensor.getFilteredTaredOrientationQuaternion();
+            Quaternion carQuaternion = new Quaternion(q2[3], q2[0], q2[1], q2[2]);
+            double[] carAngles = carQuaternion.toEulerAngles();
+
+            String x2 = getString(R.string.orientation_angle, "X", carAngles[0]);
+            String y2 = getString(R.string.orientation_angle, "Y", carAngles[1]);
+            String z2 = getString(R.string.orientation_angle, "Z", carAngles[2]);
+
+            x2TextView.setText(x2);
+            y2TextView.setText(y2);
+            z2TextView.setText(z2);
+
             handler.postDelayed(this, sensorDelay);
         }
     };
@@ -78,16 +97,24 @@ public class DeviceTestActivity extends AppCompatActivity {
         sensorDelay = sharedPreferencesManager.getSamplingRate();
     }
 
+    private void show(String text) {
+        runOnUiThread(() -> Toast.makeText(DeviceTestActivity.this,
+                text,
+                Toast.LENGTH_SHORT).show());
+    }
+
     @Override
     protected void onStart() {
-        startBT();
         super.onStart();
+
+        startBT();
     }
 
     @Override
     protected void onStop() {
-        stopBT();
         super.onStop();
+
+        stopBT();
     }
 
     private void startBT() {
@@ -99,7 +126,7 @@ public class DeviceTestActivity extends AppCompatActivity {
 
             sensor.startStreaming();
 
-            Toast.makeText(this, "Sensores conectados", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sensor conectado", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,5 +146,4 @@ public class DeviceTestActivity extends AppCompatActivity {
         }
 
     }
-
 }

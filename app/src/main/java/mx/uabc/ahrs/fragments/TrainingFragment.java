@@ -54,7 +54,7 @@ public class TrainingFragment extends Fragment {
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
-        DataPoint dataPoint = new DataPoint(event.getX(), event.getY(), event.getZ(), selectedIndex);
+        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), selectedIndex);
 
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(selectedIndex, dataPoint));
@@ -104,15 +104,16 @@ public class TrainingFragment extends Fragment {
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
 
-                double x, y, z;
+                double pitch, roll, y, z;
                 int spot;
 
-                x = Double.parseDouble(nextRecord[0]);
-                y = Double.parseDouble(nextRecord[1]);
-                z = Double.parseDouble(nextRecord[2]);
-                spot = Integer.parseInt(nextRecord[3]);
+                pitch = Double.parseDouble(nextRecord[0]);
+                roll = Double.parseDouble(nextRecord[1]);
+                y = Double.parseDouble(nextRecord[2]);
+                z = Double.parseDouble(nextRecord[3]);
+                spot = Integer.parseInt(nextRecord[4]);
 
-                DataPoint dataPoint = new DataPoint(x, y, z, spot);
+                DataPoint dataPoint = new DataPoint(pitch, roll, y, z, spot);
 
                 assert getActivity() != null;
                 getActivity().runOnUiThread(() -> adapter.addItem(spot, dataPoint));
@@ -156,8 +157,11 @@ public class TrainingFragment extends Fragment {
 
             for (List<DataPoint> list : puntos) {
                 for (DataPoint dataPoint : list) {
-                    String data = dataPoint.getX() + "," + dataPoint.getY() + ","
-                            + dataPoint.getZ() + "," + dataPoint.getSpot() + "\n";
+                    String data = dataPoint.getPitch() + ","
+                            + dataPoint.getRoll() + ","
+                            + dataPoint.getY() + ","
+                            + dataPoint.getZ() + ","
+                            + dataPoint.getSpot() + "\n";
                     fileOutputStream.write(data.getBytes());
                 }
             }

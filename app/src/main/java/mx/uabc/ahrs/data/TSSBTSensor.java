@@ -125,24 +125,6 @@ public class TSSBTSensor {
 
     }
 
-    public void setTareCurrentOrient() {
-        if (isStreaming) {
-            stopStreaming();
-
-            reentrantLock.lock();
-            byte[] send_data = new byte[]{(byte) 0x60};
-            write(send_data);
-            reentrantLock.unlock();
-
-            startStreaming();
-        } else {
-            reentrantLock.lock();
-            byte[] send_data = new byte[]{(byte) 0x60};
-            write(send_data);
-            reentrantLock.unlock();
-        }
-    }
-
     public void startStreaming() {
         reentrantLock.lock();
 

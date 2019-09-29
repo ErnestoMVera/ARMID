@@ -2,13 +2,11 @@ package mx.uabc.ahrs.dialogs;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,7 +79,9 @@ public class BluetoothDevicesDialogFragment extends DialogFragment {
 
             dismiss();
         });
+
         fetchDevices();
+
     }
 
     private void fetchDevices() {
@@ -94,9 +94,7 @@ public class BluetoothDevicesDialogFragment extends DialogFragment {
         // If there are paired devices, set the device mac address string as needed
         //(for now we assume the only paired device is the 3-Space sensor)
         for (BluetoothDevice device : pairedDevices) {
-            if (device.getName().toLowerCase().contains("yost")) {
-                settingList.add(new Setting(device.getName(), device.getAddress()));
-            }
+            settingList.add(new Setting(device.getName(), device.getAddress()));
         }
 
         adapter.addItems(settingList);

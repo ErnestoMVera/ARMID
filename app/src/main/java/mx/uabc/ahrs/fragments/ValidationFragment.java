@@ -152,8 +152,8 @@ public class ValidationFragment extends Fragment {
 
             String fileName = ref.toString();
 
-            File validationFile = new File(Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+            File validationFile =
+                    new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
 
             if (!validationFile.exists()) {
                 try {
@@ -207,7 +207,7 @@ public class ValidationFragment extends Fragment {
         if (lastLocation == null || fileOutputStream == null)
             return;
 
-        DataPoint dataPoint = new DataPoint(event.getX(), event.getY(), event.getZ(), -1);
+        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
 
         String text = mContext.getString(R.string.validation_template,

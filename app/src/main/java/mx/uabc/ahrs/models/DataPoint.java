@@ -2,28 +2,39 @@ package mx.uabc.ahrs.models;
 
 public class DataPoint {
 
-    private double x;
+    private double pitch;
+    private double roll;
     private double y;
     private double z;
     private int spot;
 
-    public DataPoint(double x, double y, double z, int spot) {
-        this.x = x;
+    public DataPoint(double pitch, double roll, double y, double z, int spot) {
+        this.pitch = pitch;
+        this.roll = roll;
         this.y = y;
         this.z = z;
         this.spot = spot;
     }
 
     public DataPoint(DataPoint dataPoint) {
-        this(dataPoint.getX(), dataPoint.getY(), dataPoint.getZ(), dataPoint.getSpot());
+        this(dataPoint.getPitch(), dataPoint.getRoll(),
+                dataPoint.getY(), dataPoint.getZ(), dataPoint.getSpot());
     }
 
-    public double getX() {
-        return x;
+    public double getPitch() {
+        return pitch;
     }
 
-    public void setX(float x) {
-        this.x = x;
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public double getRoll() {
+        return roll;
+    }
+
+    public void setRoll(float roll) {
+        this.roll = roll;
     }
 
     public double getY() {

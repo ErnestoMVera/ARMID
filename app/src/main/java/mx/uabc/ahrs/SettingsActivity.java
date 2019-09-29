@@ -88,11 +88,11 @@ public class SettingsActivity extends AppCompatActivity {
                 case 2:
                     showDevicesDialog(BluetoothDevicesDialogFragment.HEAD_REFERENCE);
                     break;
-//                case 3:
-//                    showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
-//                    break;
-//                case 4:
-//                    testDevice();
+                case 3:
+                    showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
+                    break;
+                case 4:
+                    testDevice();
             }
         });
     }
@@ -136,10 +136,10 @@ public class SettingsActivity extends AppCompatActivity {
                 sharedPreferencesManager.getSamplingRate() + " Hz"));
         settingsList.add(new Setting("Dirección MAC del sensor",
                 sharedPreferencesManager.getHeadSensorMacAddress()));
-//        settingsList.add(new Setting("Dirección MAC del sensor del vehículo",
-//                sharedPreferencesManager.getCarSensorMacAddress()));
-//        settingsList.add(new Setting("Dispositivo Bluetooth",
-//                "Prueba de ángulos de inclinación"));
+        settingsList.add(new Setting("Dirección MAC de la cámara",
+                sharedPreferencesManager.getCarSensorMacAddress()));
+        settingsList.add(new Setting("Dispositivo Bluetooth",
+                "Prueba de ángulos de inclinación"));
 
         settingsAdapter.addItems(settingsList);
     }

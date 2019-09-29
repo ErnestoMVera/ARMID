@@ -30,9 +30,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mx.uabc.ahrs.adapters.UsersAdapter;
 import mx.uabc.ahrs.data.DatabaseManager;
+import mx.uabc.ahrs.dialogs.CreateUserDialogFragment;
 import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.CreateUserEvent;
-import mx.uabc.ahrs.dialogs.CreateUserDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
 

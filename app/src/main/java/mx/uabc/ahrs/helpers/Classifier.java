@@ -30,14 +30,22 @@ public class Classifier {
 
         List<Double> listDistance = new ArrayList<>();
 
-        double x1 = point.getX();
+        double pitch1 = point.getPitch();
+        double roll1 = point.getRoll();
         double y1 = point.getY();
+        double z1 = point.getZ();
 
         for (DataPoint dataPoint : listTrainData) {
 
-            double x2 = dataPoint.getX();
+            double pitch2 = dataPoint.getPitch();
+            double roll2 = dataPoint.getRoll();
             double y2 = dataPoint.getY();
-            double distance = distanceAlgorithm.calculateDistance(x1, y1, x2, y2);
+            double z2 = dataPoint.getZ();
+
+            double distance = distanceAlgorithm
+                    .calculateDistance(pitch1, roll1, y1, z1,
+                            pitch2, roll2, y2, z2);
+
             listDistance.add(distance);
         }
 
