@@ -54,13 +54,12 @@ public class SensorActivity extends AppCompatActivity {
     private int userId;
     private long sensorDelay;
     private double lastY, lastZ;
+    private boolean isConnected;
 
-    // Name of the connected device
-    private String mConnectedDeviceName = null;
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
-    private BluetoothService mChatService = null;
+    private BluetoothService mBluetoothService = null;
 
     private SharedPreferencesManager sharedPreferencesManager;
     private TSSBTSensor headSensor;
@@ -76,6 +75,8 @@ public class SensorActivity extends AppCompatActivity {
             double pitch = headAngles[0];
             double roll = headAngles[1];
 
+            sendLastLecture(pitch, roll);
+
             long timestamp = System.currentTimeMillis();
 
             EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
@@ -84,19 +85,48 @@ public class SensorActivity extends AppCompatActivity {
         }
     };
 
-    private void processMessage(String text) {
+    private void sendLastLecture(double pitch, double roll) {
 
-        if (text.toLowerCase().contains("y")
-                && text.toLowerCase().contains("z")) {
+        if (isConnected) {
+
+            JSONObject jsonObject = new JSONObject();
+
             try {
-                JSONObject jsonObject = new JSONObject(text);
-                lastY = jsonObject.getDouble("Y");
-                lastZ = jsonObject.getDouble("Z");
+                jsonObject.put("Pitch", pitch);
+                jsonObject.put("Roll", roll);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            sendMessage(jsonObject.toString());
+        }
+    }
+
+    private void sendMessage(String message) {
+
+        // Check that we're actually connected before trying anything
+        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send = message.getBytes();
+            mBluetoothService.write(send);
+        }
+    }
+
+    private void processMessage(String text) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(text);
+            lastY = jsonObject.getDouble("Y");
+            lastZ = jsonObject.getDouble("Z");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Subscribe
@@ -181,7 +211,7 @@ public class SensorActivity extends AppCompatActivity {
                     sharedPreferencesManager.getCarSensorMacAddress()
             );
 
-            mChatService.connect(bluetoothDevice);
+            mBluetoothService.connect(bluetoothDevice);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,6 +257,7 @@ public class SensorActivity extends AppCompatActivity {
                     if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
+                            isConnected = true;
 //                            mTitle.setText(R.string.title_connected_to);
 //                            mTitle.append(mConnectedDeviceName);
                             break;
@@ -234,7 +265,9 @@ public class SensorActivity extends AppCompatActivity {
 //                            mTitle.setText(R.string.title_connecting);
                             break;
                         case BluetoothService.STATE_LISTEN:
+                            isConnected = false;
                         case BluetoothService.STATE_NONE:
+                            isConnected = false;
 //                            mTitle.setText(R.string.title_not_connected);
                             break;
                     }
@@ -252,7 +285,7 @@ public class SensorActivity extends AppCompatActivity {
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    String mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
                     Toast.makeText(getApplicationContext(), "Connected to "
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
@@ -273,7 +306,7 @@ public class SensorActivity extends AppCompatActivity {
 
         EventBus.getDefault().register(this);
 
-        if (mChatService == null) setupActivity();
+        if (mBluetoothService == null) setupActivity();
 
         startBT();
     }
@@ -294,9 +327,8 @@ public class SensorActivity extends AppCompatActivity {
         Log.d(TAG, "setupActivity()");
 
         // Initialize the BluetoothService to perform bluetooth connections
-        mChatService = new BluetoothService(this, mHandler);
+        mBluetoothService = new BluetoothService(this, mHandler);
     }
-
 
     @Override
     public synchronized void onResume() {
@@ -307,11 +339,11 @@ public class SensorActivity extends AppCompatActivity {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
+        if (mBluetoothService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothService.STATE_NONE) {
+            if (mBluetoothService.getState() == BluetoothService.STATE_NONE) {
                 // Start the Bluetooth chat services
-                mChatService.start();
+                mBluetoothService.start();
             }
         }
     }
@@ -327,7 +359,7 @@ public class SensorActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-        if (mChatService != null) mChatService.stop();
+        if (mBluetoothService != null) mBluetoothService.stop();
         if (D) Log.e(TAG, "--- ON DESTROY ---");
     }
 

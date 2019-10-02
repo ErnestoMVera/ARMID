@@ -153,7 +153,8 @@ public class ValidationFragment extends Fragment {
             String fileName = ref.toString();
 
             File validationFile =
-                    new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
+                    new File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOCUMENTS), fileName);
 
             if (!validationFile.exists()) {
                 try {
@@ -259,7 +260,7 @@ public class ValidationFragment extends Fragment {
     private LocationRequest createLocationRequest() {
 
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000);
+        locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;

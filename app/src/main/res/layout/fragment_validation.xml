@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="@string/retrovisor_central"
+                android:text="Zona izquierda"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textSize="18sp" />
 
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="@string/retrovisor_izquierdo"
+                android:text="Zona derecha"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textSize="18sp" />
 
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="@string/retrovisor_derecho"
+                android:text="Zona de piernas"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textSize="18sp" />
 
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
-                android:text="@string/dashboard_radio"
+                android:text="Zona de control"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textSize="18sp" />
 

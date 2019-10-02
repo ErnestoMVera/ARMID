@@ -363,7 +363,7 @@ public class RecollectionFragment extends Fragment {
     private LocationRequest createLocationRequest() {
 
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000);
+        locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
