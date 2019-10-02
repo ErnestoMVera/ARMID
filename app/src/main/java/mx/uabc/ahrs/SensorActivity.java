@@ -21,7 +21,6 @@ import org.json.JSONObject;
 
 import mx.uabc.ahrs.data.DatabaseManager;
 import mx.uabc.ahrs.data.SharedPreferencesManager;
-import mx.uabc.ahrs.data.TSSBTSensor;
 import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
@@ -29,8 +28,7 @@ import mx.uabc.ahrs.fragments.ClassifierFragment;
 import mx.uabc.ahrs.fragments.RecollectionFragment;
 import mx.uabc.ahrs.fragments.TrainingFragment;
 import mx.uabc.ahrs.fragments.ValidationFragment;
-import mx.uabc.ahrs.helpers.Quaternion;
-import mx.uabc.ahrs.helpers.Utils;
+import mx.uabc.ahrs.services.BluetoothSensorService;
 import mx.uabc.ahrs.services.BluetoothService;
 
 public class SensorActivity extends AppCompatActivity {
@@ -52,38 +50,46 @@ public class SensorActivity extends AppCompatActivity {
     public static final String USER_ID_PARAM = "userIdParam";
 
     private int userId;
-    private long sensorDelay;
+    //private long sensorDelay;
     private double lastY, lastZ;
-    private boolean isConnected;
+    private boolean isConnected = true;
 
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
     private BluetoothService mBluetoothService = null;
+    private BluetoothSensorService mBluetoothSensorService = null;
 
     private SharedPreferencesManager sharedPreferencesManager;
-    private TSSBTSensor headSensor;
+
+    private String buffer = "";
+    private boolean canAskForAnother = true;
+
     private Handler handler = new Handler();
-    private Runnable runnableCode = new Runnable() {
+    private Runnable runnable = new Runnable() {
         @Override
         public void run() {
 
-            float[] q1 = headSensor.getFilteredTaredOrientationQuaternion();
-            Quaternion headQuaternion = new Quaternion(q1[3], q1[0], q1[1], q1[2]);
-            double[] headAngles = headQuaternion.toEulerAngles();
+            if (canAskForAnother) {
+                sendSensorMessage(":7\n");
+                canAskForAnother = false;
+            }
 
-            double pitch = headAngles[0];
-            double roll = headAngles[1];
-
-            sendLastLecture(pitch, roll);
-
-            long timestamp = System.currentTimeMillis();
-
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
-
-            handler.postDelayed(this, sensorDelay);
+            handler.postDelayed(this, 20);
         }
     };
+
+    private void processSensorMessage(String readMessage) {
+
+        buffer = buffer.concat(readMessage);
+
+        if (buffer.contains("\r\n") && buffer.length() > 20) {
+            String data = buffer;
+            separateEulerString(data.trim());
+            buffer = "";
+            canAskForAnother = true;
+        }
+    }
 
     private void sendLastLecture(double pitch, double roll) {
 
@@ -118,6 +124,22 @@ public class SensorActivity extends AppCompatActivity {
         }
     }
 
+    private void sendSensorMessage(String message) {
+
+        // Check that we're actually connected before trying anything
+        if (mBluetoothSensorService.getState() != BluetoothSensorService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send = message.getBytes();
+            mBluetoothSensorService.write(send);
+        }
+    }
+
     private void processMessage(String text) {
 
         try {
@@ -133,10 +155,12 @@ public class SensorActivity extends AppCompatActivity {
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
         if (sensorStreamingEvent.getAction() == SensorStreamingEvent.START) {
-            handler.post(runnableCode);
+//            sendSensorMessage(":80,7,255,255,255,255,255,255,255\n");
+//            sendSensorMessage(":82,20000,-1,0\n");
+            handler.post(runnable);
+
         } else if (sensorStreamingEvent.getAction() == SensorStreamingEvent.STOP) {
-            handler.removeCallbacks(runnableCode);
-            Toast.makeText(this, "Censado detenido", Toast.LENGTH_SHORT).show();
+            handler.removeCallbacks(runnable);
         }
 
     }
@@ -169,9 +193,8 @@ public class SensorActivity extends AppCompatActivity {
         sharedPreferencesManager
                 = SharedPreferencesManager.getInstance(this);
 
-        sensorDelay = Utils
-                .hertzToMilliseconds(sharedPreferencesManager.getSamplingRate());
-
+//        sensorDelay = Utils
+//                .hertzToMilliseconds(sharedPreferencesManager.getSamplingRate());
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle(user.name);
@@ -202,10 +225,16 @@ public class SensorActivity extends AppCompatActivity {
 
         try {
 
-            headSensor = new TSSBTSensor(sharedPreferencesManager.getHeadSensorMacAddress());
-            headSensor.startStreaming();
+//            headSensor = new TSSBTSensor(sharedPreferencesManager.getHeadSensorMacAddress());
+//            headSensor.startStreaming();
+//
+//            Toast.makeText(this, "Sensor de cabeza conectado", Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(this, "Sensor de cabeza conectado", Toast.LENGTH_SHORT).show();
+            BluetoothDevice sensorDevice = mBluetoothAdapter.getRemoteDevice(
+                    sharedPreferencesManager.getHeadSensorMacAddress()
+            );
+
+            mBluetoothSensorService.connect(sensorDevice);
 
             BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice(
                     sharedPreferencesManager.getCarSensorMacAddress()
@@ -222,14 +251,14 @@ public class SensorActivity extends AppCompatActivity {
 
     }
 
-    private void stopBT() {
-
-        if (headSensor != null) {
-            if (headSensor.isStreaming)
-                headSensor.stopStreaming();
-            headSensor.close();
-        }
-    }
+//    private void stopBT() {
+//
+//        if (headSensor != null) {
+//            if (headSensor.isStreaming)
+//                headSensor.stopStreaming();
+//            headSensor.close();
+//        }
+//    }
 
     private void changeFragment(Fragment fragment) {
 
@@ -297,6 +326,66 @@ public class SensorActivity extends AppCompatActivity {
         }
     };
 
+    // The Handler that gets information back from the BluetoothService
+    @SuppressLint("HandlerLeak")
+    private final Handler mSensorHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_STATE_CHANGE:
+                    if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
+                            break;
+                    }
+                    break;
+                case MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    processSensorMessage(readMessage);
+                    break;
+                case MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    String mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to "
+                            + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    private void separateEulerString(String data) {
+
+        String[] parts = data.split(",");
+
+        try {
+            double pitch = Double.parseDouble(parts[0]);
+            double yaw = Double.parseDouble(parts[1]);
+            double roll = Double.parseDouble(parts[2]);
+            sendLastLecture(pitch, roll);
+            long timestamp = System.currentTimeMillis();
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @Override
     protected void onStart() {
@@ -306,7 +395,7 @@ public class SensorActivity extends AppCompatActivity {
 
         EventBus.getDefault().register(this);
 
-        if (mBluetoothService == null) setupActivity();
+        if (mBluetoothService == null || mBluetoothSensorService == null) setupActivity();
 
         startBT();
     }
@@ -319,7 +408,7 @@ public class SensorActivity extends AppCompatActivity {
 
         EventBus.getDefault().unregister(this);
 
-        stopBT();
+        //stopBT();
     }
 
     private void setupActivity() {
@@ -328,6 +417,7 @@ public class SensorActivity extends AppCompatActivity {
 
         // Initialize the BluetoothService to perform bluetooth connections
         mBluetoothService = new BluetoothService(this, mHandler);
+        mBluetoothSensorService = new BluetoothSensorService(this, mSensorHandler);
     }
 
     @Override
@@ -346,6 +436,14 @@ public class SensorActivity extends AppCompatActivity {
                 mBluetoothService.start();
             }
         }
+
+        if (mBluetoothSensorService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothSensorService.getState() == BluetoothSensorService.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBluetoothSensorService.start();
+            }
+        }
     }
 
     @Override
@@ -360,6 +458,9 @@ public class SensorActivity extends AppCompatActivity {
         super.onDestroy();
         // Stop the Bluetooth chat services
         if (mBluetoothService != null) mBluetoothService.stop();
+        if (mBluetoothSensorService != null) {
+            mBluetoothSensorService.stop();
+        }
         if (D) Log.e(TAG, "--- ON DESTROY ---");
     }
 

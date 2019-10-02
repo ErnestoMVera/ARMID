@@ -2,6 +2,7 @@ package mx.uabc.ahrs.services;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,33 +13,37 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.UUID;
-import java.util.Vector;
-import java.util.concurrent.locks.ReentrantLock;
 
 import mx.uabc.ahrs.SensorActivity;
 
-public class TSSBTSensorService {
+
+public class BluetoothSensorService {
 
     // Debugging
     private static final String TAG = "BluetoothSensorService";
     private static final boolean D = true;
 
-    UUID MY_UUID =
-            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    // Name for the SDP record when creating server socket
+    private static final String NAME = "SensorActivity2";
+
+    // Unique UUID for this application
+    UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     // Member fields
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
-    private TSSBTSensorService.ConnectThread mConnectThread;
-    private TSSBTSensorService.ConnectedThread mConnectedThread;
+    private AcceptThread mAcceptThread;
+    private ConnectThread mConnectThread;
+    private ConnectedThread mConnectedThread;
     private int mState;
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_CONNECTING = 1; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 2;  // now connected to a remote device
+    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
+    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
+    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     /**
      * Constructor. Prepares a new SensorActivity session.
@@ -46,7 +51,7 @@ public class TSSBTSensorService {
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
      */
-    public TSSBTSensorService(Context context, Handler handler) {
+    public BluetoothSensorService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mHandler = handler;
@@ -58,7 +63,6 @@ public class TSSBTSensorService {
      * @param state An integer defining the current connection state
      */
     private synchronized void setState(int state) {
-
         if (D) Log.d(TAG, "setState() " + mState + " -> " + state);
         mState = state;
 
@@ -78,7 +82,6 @@ public class TSSBTSensorService {
      * session in listening (server) mode. Called by the Activity onResume()
      */
     public synchronized void start() {
-
         if (D) Log.d(TAG, "start");
 
         // Cancel any thread attempting to make a connection
@@ -93,7 +96,12 @@ public class TSSBTSensorService {
             mConnectedThread = null;
         }
 
-        setState(STATE_NONE);
+        // Start the thread to listen on a BluetoothServerSocket
+        if (mAcceptThread == null) {
+            mAcceptThread = new AcceptThread();
+            mAcceptThread.start();
+        }
+        setState(STATE_LISTEN);
     }
 
     /**
@@ -102,7 +110,6 @@ public class TSSBTSensorService {
      * @param device The BluetoothDevice to connect
      */
     public synchronized void connect(BluetoothDevice device) {
-
         if (D) Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
@@ -120,7 +127,7 @@ public class TSSBTSensorService {
         }
 
         // Start the thread to connect with the given device
-        mConnectThread = new TSSBTSensorService.ConnectThread(device);
+        mConnectThread = new ConnectThread(device);
         mConnectThread.start();
         setState(STATE_CONNECTING);
     }
@@ -146,9 +153,14 @@ public class TSSBTSensorService {
             mConnectedThread = null;
         }
 
+        // Cancel the accept thread because we only want to connect to one device
+        if (mAcceptThread != null) {
+            mAcceptThread.cancel();
+            mAcceptThread = null;
+        }
 
         // Start the thread to manage the connection and perform transmissions
-        mConnectedThread = new TSSBTSensorService.ConnectedThread(socket);
+        mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
@@ -165,29 +177,45 @@ public class TSSBTSensorService {
      * Stop all threads
      */
     public synchronized void stop() {
-
         if (D) Log.d(TAG, "stop");
-
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
         }
-
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
-
+        if (mAcceptThread != null) {
+            mAcceptThread.cancel();
+            mAcceptThread = null;
+        }
         setState(STATE_NONE);
     }
 
+    /**
+     * Write to the ConnectedThread in an unsynchronized manner
+     *
+     * @param out The bytes to write
+     * @see ConnectedThread#write(byte[])
+     */
+    public void write(byte[] out) {
+        // Create temporary object
+        ConnectedThread r;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (this) {
+            if (mState != STATE_CONNECTED) return;
+            r = mConnectedThread;
+        }
+        // Perform the write unsynchronized
+        r.write(out);
+    }
 
     /**
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
     private void connectionFailed() {
-
-        setState(STATE_NONE);
+        setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(SensorActivity.MESSAGE_TOAST);
@@ -201,8 +229,7 @@ public class TSSBTSensorService {
      * Indicate that the connection was lost and notify the UI Activity.
      */
     private void connectionLost() {
-
-        setState(STATE_NONE);
+        setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(SensorActivity.MESSAGE_TOAST);
@@ -212,6 +239,78 @@ public class TSSBTSensorService {
         mHandler.sendMessage(msg);
     }
 
+    /**
+     * This thread runs while listening for incoming connections. It behaves
+     * like a server-side client. It runs until a connection is accepted
+     * (or until cancelled).
+     */
+    private class AcceptThread extends Thread {
+        // The local server socket
+        private final BluetoothServerSocket mmServerSocket;
+
+        public AcceptThread() {
+            BluetoothServerSocket tmp = null;
+
+            // Create a new listening server socket
+            try {
+                tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
+            } catch (IOException e) {
+                Log.e(TAG, "listen() failed", e);
+            }
+            mmServerSocket = tmp;
+        }
+
+        public void run() {
+            if (D) Log.d(TAG, "BEGIN mAcceptThread" + this);
+            setName("AcceptThread");
+            BluetoothSocket socket;
+
+            // Listen to the server socket if we're not connected
+            while (mState != STATE_CONNECTED) {
+                try {
+                    // This is a blocking call and will only return on a
+                    // successful connection or an exception
+                    socket = mmServerSocket.accept();
+                } catch (IOException e) {
+                    Log.e(TAG, "accept() failed", e);
+                    break;
+                }
+
+                // If a connection was accepted
+                if (socket != null) {
+                    synchronized (BluetoothSensorService.this) {
+                        switch (mState) {
+                            case STATE_LISTEN:
+                            case STATE_CONNECTING:
+                                // Situation normal. Start the connected thread.
+                                connected(socket, socket.getRemoteDevice());
+                                break;
+                            case STATE_NONE:
+                            case STATE_CONNECTED:
+                                // Either not ready or already connected. Terminate new socket.
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    Log.e(TAG, "Could not close unwanted socket", e);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            if (D) Log.i(TAG, "END mAcceptThread");
+        }
+
+        public void cancel() {
+            if (D) Log.d(TAG, "cancel " + this);
+            try {
+                mmServerSocket.close();
+            } catch (IOException e) {
+                Log.e(TAG, "close() of server failed", e);
+            }
+        }
+    }
+
 
     /**
      * This thread runs while attempting to make an outgoing connection
@@ -219,7 +318,6 @@ public class TSSBTSensorService {
      * succeeds or fails.
      */
     private class ConnectThread extends Thread {
-
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
@@ -258,12 +356,12 @@ public class TSSBTSensorService {
                     Log.e(TAG, "unable to close() socket during connection failure", e2);
                 }
                 // Start the service over to restart listening mode
-                TSSBTSensorService.this.start();
+                BluetoothSensorService.this.start();
                 return;
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (TSSBTSensorService.this) {
+            synchronized (BluetoothSensorService.this) {
                 mConnectThread = null;
             }
 
@@ -285,15 +383,9 @@ public class TSSBTSensorService {
      * It handles all incoming and outgoing transmissions.
      */
     private class ConnectedThread extends Thread {
-
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-
-        public boolean isStreaming;
-        private ReentrantLock reentrantLock;
-        private float[] lastPacket = new float[]{0, 0, 0, 1};
-        private Vector<Byte> unparsedStreamData = new Vector<>();
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "create ConnectedThread");
@@ -311,207 +403,45 @@ public class TSSBTSensorService {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
-            reentrantLock = new ReentrantLock();
         }
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
+            byte[] buffer = new byte[1024];
+            int bytes;
+
+            // Keep listening to the InputStream while connected
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);
+
+                    // Send the obtained bytes to the UI Activity
+                    mHandler.obtainMessage(SensorActivity.MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
+                } catch (IOException e) {
+                    Log.e(TAG, "disconnected", e);
+                    connectionLost();
+                    break;
+                }
+            }
         }
 
         /**
          * Write to the connected OutStream.
          *
-         * @param data The bytes to write
+         * @param buffer The bytes to write
          */
-        private void write(byte[] data) {
-            byte[] msgBuffer = new byte[data.length + 2];
-            System.arraycopy(data, 0, msgBuffer, 1, data.length);
-            msgBuffer[0] = (byte) 0xf7;
-            msgBuffer[data.length + 1] = createChecksum(data);
+        public void write(byte[] buffer) {
             try {
-                mmOutStream.write(msgBuffer);
-                mmOutStream.flush();
+                mmOutStream.write(buffer);
+
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(SensorActivity.MESSAGE_WRITE, -1, -1, buffer)
+                        .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }
-        }
-
-        private byte createChecksum(byte[] data) {
-            byte checksum = 0;
-
-            for (byte datum : data) {
-                checksum += datum % 256;
-            }
-            return checksum;
-        }
-
-        private void writeReturnHeader(byte[] data) {
-            byte[] msgBuffer = new byte[data.length + 2];
-            System.arraycopy(data, 0, msgBuffer, 1, data.length);
-            msgBuffer[0] = (byte) 0xf9;
-            msgBuffer[data.length + 1] = createChecksum(data);
-            try {
-                mmOutStream.write(msgBuffer);
-                mmOutStream.flush();
-            } catch (IOException ignored) {
-            }
-        }
-
-        private byte[] read(int amt) {
-
-            byte[] response = new byte[amt];
-            int amt_read = 0;
-            while (amt_read < amt) {
-                try {
-                    amt_read += mmInStream.read(response, amt_read, amt - amt_read);
-                } catch (IOException e) {
-
-                    Log.d("Sensor", "Exception in read: " + e.toString());
-                }
-            }
-
-            return response;
-        }
-
-        private float[] binToFloat(byte[] b) {
-
-            if (b.length % 4 != 0) {
-                return new float[0];
-            }
-
-            float[] return_array = new float[b.length / 4];
-
-            for (int i = 0; i < b.length; i += 4) {
-                //We account for endieness here
-                int asInt = (b[i + 3] & 0xFF)
-                        | ((b[i + 2] & 0xFF) << 8)
-                        | ((b[i + 1] & 0xFF) << 16)
-                        | ((b[i] & 0xFF) << 24);
-
-                return_array[i / 4] = Float.intBitsToFloat(asInt);
-            }
-
-            return return_array;
-        }
-
-        private boolean quaternionCheck(float[] orient) {
-
-            if (orient.length != 4)
-                return false;
-            double length = Math.sqrt(orient[0] * orient[0] + orient[1] * orient[1]
-                    + orient[2] * orient[2] + orient[3] * orient[3]);
-
-            return Math.abs(1 - length) < 1f;
-        }
-
-        public void startStreaming() {
-
-            reentrantLock.lock();
-
-            ByteBuffer b = ByteBuffer.allocate(4);
-            b.putInt(0x48);
-            byte[] header = b.array();
-            byte[] send_data = new byte[]{(byte) 0xdd, header[0], header[1], header[2], header[3]};
-            write(send_data);
-
-            send_data = new byte[]{(byte) 0x50, (byte) 0, (byte) 255, (byte) 255, (byte) 255,
-                    (byte) 255, (byte) 255, (byte) 255, (byte) 255};
-            write(send_data);
-
-            b.putInt(0, 1000);
-            byte[] interval = b.array();
-            b.putInt(0, 0xffffffff);
-            byte[] duration = b.array();
-            b.putInt(0, 0);
-            byte[] delay = b.array();
-            send_data = new byte[]{(byte) 0x52, interval[0], interval[1], interval[2], interval[3],
-                    duration[0], duration[1], duration[2], duration[3],
-                    delay[0], delay[1], delay[2], delay[3]};
-            write(send_data);
-
-            send_data = new byte[]{(byte) 0x55};
-            writeReturnHeader(send_data);
-            //read(2);
-            isStreaming = true;
-            reentrantLock.unlock();
-
-        }
-
-        public void stopStreaming() {
-
-            reentrantLock.lock();
-            byte[] send_data = new byte[]{(byte) 0x56};
-            write(send_data);
-            try {
-                while (mmInStream.available() != 0) {
-                    mmInStream.skip(mmInStream.available());
-                    Thread.sleep(1000);
-                }
-            } catch (Exception e) {
-                return;
-            }
-
-            isStreaming = false;
-
-            reentrantLock.unlock();
-        }
-
-        public float[] getFilteredTaredOrientationQuaternion() {
-
-            reentrantLock.lock();
-
-            if (isStreaming) {
-                try {
-                    if (unparsedStreamData.size() + mmInStream.available() < 18) {
-                        return lastPacket;
-                    }
-
-                    byte[] response;
-                    response = read(mmInStream.available());
-                    reentrantLock.unlock();
-
-                    for (byte b : response) {
-                        unparsedStreamData.add(b);
-                    }
-
-                    int location = unparsedStreamData.size() - 18;
-
-                    while (location > 0) {
-                        byte checksum = (byte) (unparsedStreamData.toArray())[location];
-                        byte data_length = (byte) (unparsedStreamData.toArray())[location + 1];
-
-                        if ((data_length & 255) == 16) {
-                            byte result = 0;
-                            byte[] quat = new byte[16];
-                            for (int i = 0; i < 16; i++) {
-                                quat[i] = (byte) (byte) (unparsedStreamData.toArray())[location + 2 + i];
-                                result = (byte) (result + quat[i]);
-                            }
-
-                            if ((result & 255) == (checksum & 255)) {
-                                float[] res = binToFloat(quat);
-                                if (quaternionCheck(res)) {
-                                    unparsedStreamData.subList(0, location + 18).clear();
-                                    lastPacket = res;
-                                    return lastPacket;
-                                }
-                            }
-                        }
-
-                        location -= 1;
-                    }
-
-                    return lastPacket;
-                } catch (Exception e) {
-                    return lastPacket;
-                }
-            }
-
-            byte[] send_data = new byte[]{(byte) 0x06};
-            write(send_data);
-            byte[] response = read(16);
-            reentrantLock.unlock();
-            return binToFloat(response);
         }
 
         public void cancel() {
@@ -521,7 +451,5 @@ public class TSSBTSensorService {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
         }
-
     }
-
 }

@@ -66,13 +66,13 @@ public class DataPoint {
         switch (spot) {
             case 0:
                 return "Parabrisas";
-            case 2:
+            case 1:
                 return "Zona izquierda";
-            case 3:
+            case 2:
                 return "Zona derecha";
-            case 4:
+            case 3:
                 return "Zona de piernas";
-            case 5:
+            case 4:
                 return "Zona de control";
         }
 
