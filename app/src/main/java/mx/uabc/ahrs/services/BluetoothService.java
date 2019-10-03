@@ -1,7 +1,9 @@
 package mx.uabc.ahrs.services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -406,18 +408,17 @@ public class BluetoothService {
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
-            byte[] buffer = new byte[1024];
-            int bytes;
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(mmInStream));
+            String line;
 
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(SensorActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    while ((line = reader.readLine()) != null) {
+                        mHandler.obtainMessage(SensorActivity.MESSAGE_READ, line)
+                                .sendToTarget();
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();

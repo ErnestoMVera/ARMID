@@ -205,7 +205,7 @@ public class ValidationFragment extends Fragment {
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
-        if (lastLocation == null || fileOutputStream == null)
+        if (lastLocation == null)
             return;
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
@@ -216,7 +216,8 @@ public class ValidationFragment extends Fragment {
                 lastLocation.getLatitude(), lastLocation.getLongitude());
 
         try {
-            fileOutputStream.write(text.getBytes());
+            if (fileOutputStream != null)
+                fileOutputStream.write(text.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
