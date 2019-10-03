@@ -3,7 +3,6 @@ package mx.uabc.ahrs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -83,48 +82,15 @@ public class SettingsActivity extends AppCompatActivity {
                     askForPermissions();
                     break;
                 case 1:
-                    showSamplingDialog();
-                    break;
-                case 2:
                     showDevicesDialog(BluetoothDevicesDialogFragment.HEAD_REFERENCE);
                     break;
-                case 3:
+                case 2:
                     showDevicesDialog(BluetoothDevicesDialogFragment.CAR_REFERENCE);
                     break;
-                case 4:
-                    testDevice();
             }
         });
     }
 
-    private void testDevice() {
-        startActivity(new Intent(this, DeviceTestActivity.class));
-    }
-
-    private void showSamplingDialog() {
-
-        @SuppressLint("InflateParams") View mView = LayoutInflater.from(this)
-                .inflate(R.layout.user_input_dialog_box, null);
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
-        alertDialogBuilderUserInput.setView(mView);
-
-        final EditText userInputDialogEditText = mView.findViewById(R.id.userInputDialog);
-        userInputDialogEditText.setText(String.valueOf(sharedPreferencesManager.getSamplingRate()));
-
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setPositiveButton("Aceptar", (dialogBox, id) -> {
-                    String samplingRate = userInputDialogEditText.getEditableText().toString();
-                    int hz = Integer.parseInt(samplingRate);
-                    sharedPreferencesManager.setSamplingRate(hz);
-                    fetchSettings();
-                })
-                .setNegativeButton("Cancelar",
-                        (dialogBox, id) -> dialogBox.cancel());
-
-        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-        alertDialogAndroid.show();
-    }
 
     private void fetchSettings() {
 
@@ -132,14 +98,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         settingsList.add(new Setting("Otorgar permisos",
                 "Locación, lectura y escritura"));
-        settingsList.add(new Setting("Tasa de muestreo",
-                sharedPreferencesManager.getSamplingRate() + " Hz"));
         settingsList.add(new Setting("Dirección MAC del sensor",
                 sharedPreferencesManager.getHeadSensorMacAddress()));
         settingsList.add(new Setting("Dirección MAC de la cámara",
                 sharedPreferencesManager.getCarSensorMacAddress()));
-        settingsList.add(new Setting("Dispositivo Bluetooth",
-                "Prueba de ángulos de inclinación"));
 
         settingsAdapter.addItems(settingsList);
     }

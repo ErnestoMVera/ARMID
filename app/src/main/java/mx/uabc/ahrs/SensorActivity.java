@@ -34,7 +34,7 @@ import mx.uabc.ahrs.services.BluetoothService;
 public class SensorActivity extends AppCompatActivity {
 
     // Debugging
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "SensorActivity";
     private static final boolean D = true;
 
     // Message types sent from the BluetoothService Handler
@@ -50,18 +50,14 @@ public class SensorActivity extends AppCompatActivity {
     public static final String USER_ID_PARAM = "userIdParam";
 
     private int userId;
-    //private long sensorDelay;
     private double lastY, lastZ;
-    private boolean isConnected = true;
-
-    // Local Bluetooth adapter
-    private BluetoothAdapter mBluetoothAdapter = null;
-    // Member object for the chat services
-    private BluetoothService mBluetoothService = null;
-    private BluetoothSensorService mBluetoothSensorService = null;
 
     private SharedPreferencesManager sharedPreferencesManager;
 
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    private BluetoothService mBluetoothService = null;
+    private BluetoothSensorService mBluetoothSensorService = null;
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -73,82 +69,6 @@ public class SensorActivity extends AppCompatActivity {
             handler.postDelayed(this, 20);
         }
     };
-
-    private void processSensorMessage(String readMessage) {
-
-        String[] parts = readMessage.split(",");
-
-        if (parts.length == 2) {
-            lastY = Double.parseDouble(parts[0]);
-            lastZ = Double.parseDouble(parts[1]);
-        } else if (parts.length == 3) {
-            double pitch = Double.parseDouble(parts[0]);
-            double yaw = Double.parseDouble(parts[1]);
-            double roll = Double.parseDouble(parts[2]);
-            sendLastLecture(pitch, roll);
-            long timestamp = System.currentTimeMillis();
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
-        }
-    }
-
-    private void sendLastLecture(double pitch, double roll) {
-
-        if (isConnected) {
-            String msg = pitch + "," + roll + "\r\n";
-            sendMessage(msg);
-        }
-    }
-
-    private void sendMessage(String message) {
-
-        // Check that we're actually connected before trying anything
-        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothService to write
-            byte[] send = message.getBytes();
-            mBluetoothService.write(send);
-        }
-    }
-
-    private void sendSensorMessage(String message) {
-
-        // Check that we're actually connected before trying anything
-        if (mBluetoothSensorService.getState() != BluetoothSensorService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothService to write
-            byte[] send = message.getBytes();
-            mBluetoothSensorService.write(send);
-        }
-    }
-
-    private void processMessage(String text) {
-
-        String[] jsons = text.split("\r\n");
-
-        if (jsons.length > 0) {
-
-            String tmp = jsons[0].trim();
-
-            try {
-                JSONObject jsonObject = new JSONObject(tmp);
-                lastY = jsonObject.getDouble("Y");
-                lastZ = jsonObject.getDouble("Z");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
@@ -189,8 +109,6 @@ public class SensorActivity extends AppCompatActivity {
         sharedPreferencesManager
                 = SharedPreferencesManager.getInstance(this);
 
-//        sensorDelay = Utils
-//                .hertzToMilliseconds(sharedPreferencesManager.getSamplingRate());
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle(user.name);
@@ -226,62 +144,6 @@ public class SensorActivity extends AppCompatActivity {
                         fragment.getClass().getCanonicalName())
                 .commit();
     }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return true;
-    }
-
-    // The Handler that gets information back from the BluetoothService
-    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_STATE_CHANGE:
-                    if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                    switch (msg.arg1) {
-                        case BluetoothService.STATE_CONNECTED:
-                            isConnected = true;
-//                            mTitle.setText(R.string.title_connected_to);
-//                            mTitle.append(mConnectedDeviceName);
-                            break;
-                        case BluetoothService.STATE_CONNECTING:
-//                            mTitle.setText(R.string.title_connecting);
-                            break;
-                        case BluetoothService.STATE_LISTEN:
-                            isConnected = false;
-                        case BluetoothService.STATE_NONE:
-                            isConnected = false;
-//                            mTitle.setText(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
-                case MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    break;
-                case MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    processMessage(readMessage);
-                    break;
-                case MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    String mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    Toast.makeText(getApplicationContext(), "Connected to "
-                            + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    break;
-                case MESSAGE_TOAST:
-                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-                            Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    };
 
     // The Handler that gets information back from the BluetoothService
     @SuppressLint("HandlerLeak")
@@ -338,10 +200,90 @@ public class SensorActivity extends AppCompatActivity {
 
     }
 
+    private void processSensorMessage(String readMessage) {
+
+        String[] parts = readMessage.split(",");
+
+        if (parts.length == 2) {
+
+            lastY = Double.parseDouble(parts[0]);
+            lastZ = Double.parseDouble(parts[1]);
+
+        } else if (parts.length == 3) {
+
+            double pitch = Double.parseDouble(parts[0]);
+            double yaw = Double.parseDouble(parts[1]);
+            double roll = Double.parseDouble(parts[2]);
+
+            String msg = pitch + "," + roll + "\r\n";
+            sendMessage(msg);
+
+            long timestamp = System.currentTimeMillis();
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
+        }
+    }
+
+
+    private void sendMessage(String message) {
+
+        // Check that we're actually connected before trying anything
+        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send = message.getBytes();
+            mBluetoothService.write(send);
+        }
+    }
+
+    private void sendSensorMessage(String message) {
+
+        // Check that we're actually connected before trying anything
+        if (mBluetoothSensorService.getState() != BluetoothSensorService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send = message.getBytes();
+            mBluetoothSensorService.write(send);
+        }
+    }
+
+    private void processMessage(String text) {
+
+        String[] jsons = text.split("\r\n");
+
+        if (jsons.length > 0) {
+
+            String tmp = jsons[0].trim();
+
+            try {
+                JSONObject jsonObject = new JSONObject(tmp);
+                lastY = jsonObject.getDouble("Y");
+                lastZ = jsonObject.getDouble("Z");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-
         if (D) Log.e(TAG, "++ ON START ++");
 
         // Initialize the BluetoothService to perform bluetooth connections
@@ -396,16 +338,17 @@ public class SensorActivity extends AppCompatActivity {
         if (D) Log.e(TAG, "- ON PAUSE -");
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Stop the Bluetooth chat services
-        if (mBluetoothService != null) mBluetoothService.stop();
-        if (mBluetoothSensorService != null) {
-            mBluetoothSensorService.stop();
-        }
         if (D) Log.e(TAG, "--- ON DESTROY ---");
+
+        // Stop the Bluetooth chat services
+        if (mBluetoothService != null)
+            mBluetoothService.stop();
+        if (mBluetoothSensorService != null)
+            mBluetoothSensorService.stop();
+
     }
 
 }

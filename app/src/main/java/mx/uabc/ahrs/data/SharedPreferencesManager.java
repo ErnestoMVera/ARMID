@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 
 public class SharedPreferencesManager {
 
-    private static final String SAMPLING_RATE = "SAMPLE_RATE_KEY";
     private static final String HEAD_SENSOR_MAC_ADDRESS = "HEAD_SENSOR_MAC_KEY";
     private static final String CAR_SENSOR_MAC_ADDRESS = "CAR_SENSOR_MAC_KEY";
 
@@ -18,16 +17,6 @@ public class SharedPreferencesManager {
         mSharedPref = context.getSharedPreferences(context.getPackageName(),
                 Activity.MODE_PRIVATE);
 
-    }
-
-    public int getSamplingRate() {
-        return mSharedPref.getInt(SAMPLING_RATE, 50);
-    }
-
-    public void setSamplingRate(int sampleRate) {
-        SharedPreferences.Editor prefsEditor = mSharedPref.edit();
-        prefsEditor.putInt(SAMPLING_RATE, sampleRate);
-        prefsEditor.apply();
     }
 
     public String getHeadSensorMacAddress() {

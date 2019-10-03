@@ -12,10 +12,6 @@ import mx.uabc.ahrs.models.DataPoint;
 
 public class Utils {
 
-    public static long hertzToMilliseconds(int hertz) {
-        return (long) ((1d / hertz) * 1000d);
-    }
-
     public static List<DataPoint> getTrainingDataSet(File trainingDateSetFile) {
 
         List<DataPoint> dataPointList = new ArrayList<>();
