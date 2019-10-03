@@ -307,6 +307,7 @@ public class TrainingFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+
         if (isRecording)
             EventBus.getDefault().post(new SensorStreamingEvent(SensorStreamingEvent.STOP));
 

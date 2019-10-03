@@ -59,24 +59,13 @@ public class SensorActivity extends AppCompatActivity {
     private BluetoothService mBluetoothService = null;
     private BluetoothSensorService mBluetoothSensorService = null;
 
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-
-            sendSensorMessage(":7\n");
-
-            handler.postDelayed(this, 20);
-        }
-    };
-
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
         if (sensorStreamingEvent.getAction() == SensorStreamingEvent.START) {
-            handler.post(runnable);
+            startSensorStreaming();
         } else if (sensorStreamingEvent.getAction() == SensorStreamingEvent.STOP) {
-            handler.removeCallbacks(runnable);
+            stopSensorStreaming();
         }
 
     }
@@ -159,6 +148,7 @@ public class SensorActivity extends AppCompatActivity {
                         case BluetoothService.STATE_CONNECTING:
                             break;
                         case BluetoothService.STATE_LISTEN:
+                            break;
                         case BluetoothService.STATE_NONE:
                             break;
                     }
@@ -186,20 +176,6 @@ public class SensorActivity extends AppCompatActivity {
         }
     };
 
-    private void startBT() {
-
-        BluetoothDevice sensorDevice = mBluetoothAdapter.getRemoteDevice(
-                sharedPreferencesManager.getHeadSensorMacAddress()
-        );
-        mBluetoothSensorService.connect(sensorDevice);
-
-        BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice(
-                sharedPreferencesManager.getCarSensorMacAddress()
-        );
-        mBluetoothService.connect(bluetoothDevice);
-
-    }
-
     private void processSensorMessage(String readMessage) {
 
         String[] parts = readMessage.split(",");
@@ -223,14 +199,11 @@ public class SensorActivity extends AppCompatActivity {
         }
     }
 
-
     private void sendMessage(String message) {
 
         // Check that we're actually connected before trying anything
-        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED)
             return;
-        }
 
         // Check that there's actually something to send
         if (message.length() > 0) {
@@ -287,14 +260,40 @@ public class SensorActivity extends AppCompatActivity {
         if (D) Log.e(TAG, "++ ON START ++");
 
         // Initialize the BluetoothService to perform bluetooth connections
-        if (mBluetoothService == null)
+        if (mBluetoothService == null) {
+
             mBluetoothService = new BluetoothService(this, mSensorHandler);
-        if (mBluetoothSensorService == null)
+
+            BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice(
+                    sharedPreferencesManager.getCarSensorMacAddress()
+            );
+
+            mBluetoothService.connect(bluetoothDevice);
+        }
+
+        if (mBluetoothSensorService == null) {
+
             mBluetoothSensorService = new BluetoothSensorService(this, mSensorHandler);
+
+            BluetoothDevice sensorDevice = mBluetoothAdapter.getRemoteDevice(
+                    sharedPreferencesManager.getHeadSensorMacAddress()
+            );
+
+            mBluetoothSensorService.connect(sensorDevice);
+        }
 
         EventBus.getDefault().register(this);
 
-        startBT();
+    }
+
+    private void startSensorStreaming() {
+        sendSensorMessage(":80,7,255,255,255,255,255,255,255\n");
+        sendSensorMessage(":82,25000,-1,0\n");
+        sendSensorMessage(":85\n");
+    }
+
+    private void stopSensorStreaming() {
+        sendSensorMessage(":86\n");
     }
 
     @Override
@@ -346,8 +345,10 @@ public class SensorActivity extends AppCompatActivity {
         // Stop the Bluetooth chat services
         if (mBluetoothService != null)
             mBluetoothService.stop();
-        if (mBluetoothSensorService != null)
+        if (mBluetoothSensorService != null) {
+            stopSensorStreaming();
             mBluetoothSensorService.stop();
+        }
 
     }
 
