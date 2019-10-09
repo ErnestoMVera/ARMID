@@ -16,8 +16,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import mx.uabc.ahrs.data.DatabaseManager;
 import mx.uabc.ahrs.data.SharedPreferencesManager;
@@ -182,14 +180,35 @@ public class SensorActivity extends AppCompatActivity {
 
         if (parts.length == 2) {
 
-            lastY = Double.parseDouble(parts[0]);
-            lastZ = Double.parseDouble(parts[1]);
+            try {
+
+                lastY = Double.parseDouble(parts[0]);
+                lastZ = Double.parseDouble(parts[1]);
+
+            } catch (Exception e) {
+
+                lastY = 0;
+                lastY = 0;
+
+            }
 
         } else if (parts.length == 3) {
 
-            double pitch = Double.parseDouble(parts[0]);
-            double yaw = Double.parseDouble(parts[1]);
-            double roll = Double.parseDouble(parts[2]);
+            double pitch, roll, yaw;
+
+            try {
+
+                pitch = Double.parseDouble(parts[0]);
+                yaw = Double.parseDouble(parts[1]);
+                roll = Double.parseDouble(parts[2]);
+
+            } catch (Exception e) {
+
+                pitch = 0;
+                yaw = 0;
+                roll = 0;
+
+            }
 
             String msg = pitch + "," + roll + "\r\n";
             sendMessage(msg);
@@ -227,25 +246,6 @@ public class SensorActivity extends AppCompatActivity {
             byte[] send = message.getBytes();
             mBluetoothSensorService.write(send);
         }
-    }
-
-    private void processMessage(String text) {
-
-        String[] jsons = text.split("\r\n");
-
-        if (jsons.length > 0) {
-
-            String tmp = jsons[0].trim();
-
-            try {
-                JSONObject jsonObject = new JSONObject(tmp);
-                lastY = jsonObject.getDouble("Y");
-                lastZ = jsonObject.getDouble("Z");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
     @Override
