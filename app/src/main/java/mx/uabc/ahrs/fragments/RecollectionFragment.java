@@ -257,7 +257,7 @@ public class RecollectionFragment extends Fragment {
             R.id.action_change_right})
     List<FloatingActionButton> comportamientosFABs;
 
-    @BindViews({R.id.sin_copiloto, R.id.con_copiloto})
+    @BindViews({R.id.con_copiloto, R.id.sin_copiloto})
     List<FloatingActionButton> tareaSecundariaFABs;
 
     @Subscribe
@@ -357,7 +357,7 @@ public class RecollectionFragment extends Fragment {
         setFabBackgroundToSelected(fab2);
 
         comportamiento = Comportamiento.LINEA_RECTA.toString();
-        tareaSecundaria = TareaSecundaria.SIN_COPILOTO.toString();
+        tareaSecundaria = TareaSecundaria.CON_COPILOTO.toString();
     }
 
     private LocationRequest createLocationRequest() {

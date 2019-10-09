@@ -131,20 +131,20 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/sin_copiloto"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_one_person" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/con_copiloto"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/ic_two_person" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/sin_copiloto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_one_person" />
 
             </LinearLayout>
 
