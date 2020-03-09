@@ -1,14 +1,11 @@
 package mx.uabc.ahrs.fragments;
 
-
 import android.content.Context;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,34 +13,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import mehdi.sakout.fancybuttons.FancyButton;
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.data.DatabaseManager;
 import mx.uabc.ahrs.entities.User;
+import mx.uabc.ahrs.events.ControllerEvent;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
 import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
+
+import static android.view.KeyEvent.KEYCODE_BUTTON_B;
+import static android.view.KeyEvent.KEYCODE_BUTTON_Y;
+import static android.view.KeyEvent.KEYCODE_DPAD_LEFT;
+import static android.view.KeyEvent.KEYCODE_DPAD_RIGHT;
+import static android.view.KeyEvent.KEYCODE_DPAD_UP;
 
 public class ValidationFragment extends Fragment {
 
@@ -51,92 +48,40 @@ public class ValidationFragment extends Fragment {
 
     private User user;
     private boolean isRecording;
+    private boolean isClassifying;
     private Classifier classifier;
-    private Location lastLocation;
 
     private Unbinder unbinder;
     private Context mContext;
-    private FusedLocationProviderClient fusedLocationClient;
     private FileOutputStream fileOutputStream;
 
-    private List<Integer> spots = new ArrayList<>();
+    private int selectedSpot;
 
-    @BindView(R.id.puntosSeleccionados)
-    TextView puntosSeleccionadosTextView;
-    @BindView(R.id.detalles)
-    TextView detallesTextView;
-    @BindView(R.id.classifier_btn)
-    Button classifierButton;
+    @BindView(R.id.selected_area)
+    TextView selectedArea;
+    @BindView(R.id.classified_area)
+    TextView classifiedArea;
 
-    private LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
+    @BindView(R.id.classify_button)
+    FancyButton classifyButton;
+    @BindView(R.id.save_button)
+    FancyButton saveButton;
 
-            if (locationResult == null) {
-                return;
-            }
+    @OnClick(R.id.classify_button)
+    public void startStopReadings() {
 
-            List<Location> locationList = locationResult.getLocations();
-
-            if (locationList.size() > 0) {
-                lastLocation = locationList.get(locationList.size() - 1);
-            }
-        }
-    };
-
-    @OnClick({R.id.s0, R.id.s1, R.id.s2, R.id.s3, R.id.s4})
-    public void onChipClicked(View view) {
-
-        int spot = 0;
-
-        switch (view.getId()) {
-            case R.id.s0:
-                spot = 0;
-                break;
-            case R.id.s1:
-                spot = 1;
-                break;
-            case R.id.s2:
-                spot = 2;
-                break;
-            case R.id.s3:
-                spot = 3;
-                break;
-            case R.id.s4:
-                spot = 4;
-                break;
-        }
-
-        boolean found = false;
-        int index = 0;
-
-        for (int s : spots) {
-            if (spot == s) {
-                found = true;
-                break;
-            } else {
-                index++;
-            }
-        }
-
-        if (!found)
-            spots.add(spot);
-        else {
-            spots.remove(index);
-        }
-
-        updateTextView();
+        int action = isClassifying ? SensorStreamingEvent.STOP : SensorStreamingEvent.START;
+        EventBus.getDefault().post(new SensorStreamingEvent(action));
+        String text = isClassifying ? "Clasificar" : "Detener";
+        classifyButton.setText(text);
+        isClassifying = !isClassifying;
     }
 
-    @OnClick(R.id.classifier_btn)
-    public void classify(View view) {
+    @OnClick(R.id.save_button)
+    public void saveReadings() {
 
-        Button button = (Button) view;
-
-        int action = isRecording ? SensorStreamingEvent.STOP : SensorStreamingEvent.START;
-        EventBus.getDefault().post(new SensorStreamingEvent(action));
-        String text = isRecording ? "Clasificar" : "Detener";
-        button.setText(text);
+        String text = isRecording ? "Guardar" : "Detener";
+        saveButton.setText(text);
         isRecording = !isRecording;
 
         if (isRecording) {
@@ -154,7 +99,7 @@ public class ValidationFragment extends Fragment {
 
             File validationFile =
                     new File(Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS), fileName);
+                            Environment.DIRECTORY_DOWNLOADS), fileName);
 
             if (!validationFile.exists()) {
                 try {
@@ -167,106 +112,76 @@ public class ValidationFragment extends Fragment {
             try {
 
                 fileOutputStream = new FileOutputStream(validationFile);
-
-                String header = "";
-
-                for (int i = 0; i < spots.size(); i++) {
-
-                    header = header.concat(String.valueOf(spots.get(i)));
-
-                    if (i < spots.size() - 1)
-                        header = header.concat(",");
-                }
-
-                header = header.concat("\ntimestamp,spot,speed,lat,lng\n");
-
-                fileOutputStream.write(header.getBytes());
+                fileOutputStream.write("timestamp,selected,detected\n".getBytes());
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, null);
 
         } else {
-
-            fusedLocationClient.removeLocationUpdates(locationCallback);
 
             try {
                 fileOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            updateDetallesTextView(false, 0, 0.0);
         }
+    }
+
+    @Subscribe
+    public void onControllerEvent(ControllerEvent event) {
+
+        switch (event.getKeyCode()) {
+            case KEYCODE_DPAD_LEFT:
+                selectedSpot = 1;
+                break;
+            case KEYCODE_DPAD_RIGHT:
+                selectedSpot = 2;
+                break;
+            case KEYCODE_DPAD_UP:
+                selectedSpot = 0;
+                break;
+            case KEYCODE_BUTTON_B:
+                selectedSpot = 3;
+                break;
+            case KEYCODE_BUTTON_Y:
+                selectedSpot = 4;
+                break;
+        }
+
+        if (getActivity() != null)
+            getActivity().runOnUiThread(() -> selectedArea.
+                    setText(DataPoint.getSpotName(selectedSpot)));
     }
 
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
-        if (lastLocation == null)
-            return;
-
-        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
+        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
+                event.getY(), event.getZ(), -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
 
         String text = mContext.getString(R.string.validation_template,
-                event.getTimestamp(), predictedSpot, lastLocation.getSpeed(),
-                lastLocation.getLatitude(), lastLocation.getLongitude());
+                event.getTimestamp(), selectedSpot, predictedSpot);
 
-        try {
-            if (fileOutputStream != null)
-                fileOutputStream.write(text.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (getActivity() != null)
+            getActivity().runOnUiThread(() -> classifiedArea
+                    .setText(DataPoint.getSpotName(predictedSpot)));
 
-        updateDetallesTextView(true, predictedSpot, lastLocation.getSpeed());
+        if (isRecording)
+            try {
+                if (fileOutputStream != null)
+                    fileOutputStream.write(text.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     public ValidationFragment() {
         // Required empty public constructor
     }
 
-    private void updateDetallesTextView(boolean isRecording, int spot, double speed) {
-
-        String speedText = String.format(Locale.getDefault(), "%.2f", speed) + " metros/segundo";
-
-        String text = isRecording ? DataPoint.getSpotName(spot) + "\n" + speedText : "";
-        assert getActivity() != null;
-        getActivity().runOnUiThread(() -> detallesTextView.setText(text));
-
-    }
-
-    private void updateTextView() {
-
-        String text = "";
-        int pos = 1;
-
-        for (int s : spots) {
-            String spotName = pos + ".- " + DataPoint.getSpotName(s) + "\n";
-            text = text.concat(spotName);
-            pos++;
-        }
-
-        assert getActivity() != null;
-        String finalText = text;
-        getActivity().runOnUiThread(() -> {
-            classifierButton.setEnabled(spots.size() > 1);
-            puntosSeleccionadosTextView.setText(finalText);
-        });
-    }
-
-    private LocationRequest createLocationRequest() {
-
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
-
-    }
 
     public static ValidationFragment newInstance(int userId) {
 
@@ -286,7 +201,6 @@ public class ValidationFragment extends Fragment {
         assert args != null;
         int userId = args.getInt(USER_ID_PARAM);
         user = DatabaseManager.getInstance(mContext).getUserDao().loadById(userId);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
     }
 
     @Override
@@ -312,6 +226,10 @@ public class ValidationFragment extends Fragment {
 
         List<DataPoint> trainingDataSetList = Utils.getTrainingDataSet(trainingFile);
         classifier.addTrainingData(trainingDataSetList);
+        selectedSpot = 0;
+        if (getActivity() != null)
+            getActivity().runOnUiThread(() -> selectedArea
+                    .setText(DataPoint.getSpotName(selectedSpot)));
     }
 
     @Override

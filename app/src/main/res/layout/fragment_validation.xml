@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,101 +14,39 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Selecciona los puntos en el orden a observar"
-            android:textColor="@color/textColorSecondary"
-            android:textSize="16sp"
-            tools:ignore="HardcodedText" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/s0"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:text="@string/parabrisas"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textSize="18sp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/s1"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:text="Zona izquierda"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textSize="18sp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/s2"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:text="Zona derecha"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textSize="18sp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/s3"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:text="Zona de piernas"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textSize="18sp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/s4"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:text="Zona de control"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textSize="18sp" />
-
-        </com.google.android.material.chip.ChipGroup>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Orden seleccionado"
-            android:textColor="@color/textColorSecondary"
-            android:textSize="16sp"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/puntosSeleccionados"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/textColorPrimary"
+            android:text="Área seleccionada"
+            android:textColor="@color/color_black"
             android:textSize="18sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText"
-            tools:text="Puntos seleccionados" />
+            tools:ignore="HardcodedText" />
 
         <TextView
-            android:id="@+id/detalles"
-            android:layout_width="match_parent"
+            android:id="@+id/selected_area"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText"
-            tools:text="Detalles" />
+            android:layout_marginTop="6dp"
+            android:text="Área seleccionada"
+            android:textSize="22sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Área inferida"
+            android:textColor="@color/color_black"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/classified_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Área seleccionada"
+            android:textSize="22sp"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 
@@ -118,14 +57,32 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/classifier_btn"
-            style="@style/Widget.AppCompat.Button.Colored"
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/classify_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_weight="1"
-            android:enabled="false"
-            android:text="Clasificar"
+            android:padding="8dp"
+            fancy:fb_defaultColor="@color/colorAccent"
+            fancy:fb_focusColor="@color/colorPrimary"
+            fancy:fb_radius="30dp"
+            fancy:fb_text="Clasificar"
+            fancy:fb_textColor="@color/color_white"
+            tools:ignore="HardcodedText" />
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            fancy:fb_defaultColor="@color/colorAccent"
+            fancy:fb_focusColor="@color/colorPrimary"
+            fancy:fb_radius="30dp"
+            fancy:fb_text="Guardar"
+            fancy:fb_textColor="@color/color_white"
             tools:ignore="HardcodedText" />
 
     </LinearLayout>

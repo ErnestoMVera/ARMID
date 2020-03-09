@@ -42,16 +42,26 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import mehdi.sakout.fancybuttons.FancyButton;
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.adapters.RecollectionAdapter;
 import mx.uabc.ahrs.data.DatabaseManager;
 import mx.uabc.ahrs.entities.User;
+import mx.uabc.ahrs.events.ControllerEvent;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
 import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 import mx.uabc.ahrs.models.RecollectionData;
+
+import static android.view.KeyEvent.KEYCODE_BUTTON_B;
+import static android.view.KeyEvent.KEYCODE_BUTTON_L1;
+import static android.view.KeyEvent.KEYCODE_BUTTON_R1;
+import static android.view.KeyEvent.KEYCODE_BUTTON_Y;
+import static android.view.KeyEvent.KEYCODE_DPAD_LEFT;
+import static android.view.KeyEvent.KEYCODE_DPAD_RIGHT;
+import static android.view.KeyEvent.KEYCODE_DPAD_UP;
 
 public class RecollectionFragment extends Fragment {
 
@@ -158,7 +168,7 @@ public class RecollectionFragment extends Fragment {
     @OnClick(R.id.record)
     public void record(View view) {
 
-        Button button = (Button) view;
+        FancyButton button = (FancyButton) view;
 
         int action = isRecording ? SensorStreamingEvent.STOP : SensorStreamingEvent.START;
         EventBus.getDefault().post(new SensorStreamingEvent(action));
@@ -259,6 +269,39 @@ public class RecollectionFragment extends Fragment {
 
     @BindViews({R.id.con_copiloto, R.id.sin_copiloto})
     List<FloatingActionButton> tareaSecundariaFABs;
+
+    @Subscribe
+    public void onControllerEvent(ControllerEvent event) {
+
+        FloatingActionButton floatingActionButton = null;
+
+        switch (event.getKeyCode()) {
+            case KEYCODE_DPAD_LEFT:
+                floatingActionButton = comportamientosFABs.get(5);
+                break;
+            case KEYCODE_DPAD_RIGHT:
+                floatingActionButton = comportamientosFABs.get(6);
+                break;
+            case KEYCODE_DPAD_UP:
+                floatingActionButton = comportamientosFABs.get(0);
+                break;
+            case KEYCODE_BUTTON_B:
+                floatingActionButton = comportamientosFABs.get(3);
+                break;
+            case KEYCODE_BUTTON_Y:
+                floatingActionButton = comportamientosFABs.get(4);
+                break;
+            case KEYCODE_BUTTON_L1:
+                floatingActionButton = comportamientosFABs.get(1);
+                break;
+            case KEYCODE_BUTTON_R1:
+                floatingActionButton = comportamientosFABs.get(2);
+                break;
+        }
+
+        if (floatingActionButton != null)
+            floatingActionButton.performClick();
+    }
 
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {

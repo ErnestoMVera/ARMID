@@ -65,15 +65,15 @@ public class DataPoint {
 
         switch (spot) {
             case 0:
-                return "Parabrisas";
+                return "Camino";
             case 1:
-                return "Zona izquierda";
+                return "Izquierda";
             case 2:
-                return "Zona derecha";
+                return "Derecha";
             case 3:
-                return "Zona de piernas";
+                return "Piernas";
             case 4:
-                return "Zona de control";
+                return "Audio / Clima";
         }
 
         return "No definido";

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,9 +19,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import mx.uabc.ahrs.data.DatabaseManager;
 import mx.uabc.ahrs.data.SharedPreferencesManager;
 import mx.uabc.ahrs.entities.User;
+import mx.uabc.ahrs.events.ControllerEvent;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.fragments.ClassifierFragment;
@@ -28,6 +35,14 @@ import mx.uabc.ahrs.fragments.TrainingFragment;
 import mx.uabc.ahrs.fragments.ValidationFragment;
 import mx.uabc.ahrs.services.BluetoothSensorService;
 import mx.uabc.ahrs.services.BluetoothService;
+
+import static android.view.KeyEvent.KEYCODE_BUTTON_B;
+import static android.view.KeyEvent.KEYCODE_BUTTON_L1;
+import static android.view.KeyEvent.KEYCODE_BUTTON_R1;
+import static android.view.KeyEvent.KEYCODE_BUTTON_Y;
+import static android.view.KeyEvent.KEYCODE_DPAD_LEFT;
+import static android.view.KeyEvent.KEYCODE_DPAD_RIGHT;
+import static android.view.KeyEvent.KEYCODE_DPAD_UP;
 
 public class SensorActivity extends AppCompatActivity {
 
@@ -57,6 +72,11 @@ public class SensorActivity extends AppCompatActivity {
     private BluetoothService mBluetoothService = null;
     private BluetoothSensorService mBluetoothSensorService = null;
 
+    ArrayList<Integer> buttonActions =
+            new ArrayList<>(Arrays.asList(KEYCODE_DPAD_LEFT, KEYCODE_DPAD_RIGHT,
+                    KEYCODE_DPAD_UP, KEYCODE_BUTTON_B, KEYCODE_BUTTON_Y,
+                    KEYCODE_BUTTON_L1, KEYCODE_BUTTON_R1));
+
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
@@ -66,6 +86,23 @@ public class SensorActivity extends AppCompatActivity {
             stopSensorStreaming();
         }
 
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+
+        if (buttonActions.contains(event.getKeyCode())
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            dispatchButtonAction(event.getKeyCode());
+            return true;
+        }
+
+        return false;
+    }
+
+    private void dispatchButtonAction(int keyCode) {
+        EventBus.getDefault()
+                .post(new ControllerEvent(keyCode));
     }
 
     @Override
@@ -106,9 +143,6 @@ public class SensorActivity extends AppCompatActivity {
             switch (menuItem.getItemId()) {
                 case R.id.navigation_training:
                     changeFragment(TrainingFragment.newInstance(userId));
-                    return true;
-                case R.id.navigation_classificator:
-                    changeFragment(ClassifierFragment.newInstance(userId));
                     return true;
                 case R.id.navigation_validator:
                     changeFragment(ValidationFragment.newInstance(userId));

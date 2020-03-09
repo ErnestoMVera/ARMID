@@ -21,7 +21,7 @@ public class RecollectionAdapter extends BaseAdapter {
 
     public RecollectionAdapter() {
         this.dataList = new ArrayList<>();
-        this.dataList.add(new Setting("Área", "N/A"));
+        this.dataList.add(new Setting("Área inferida", "N/A"));
         this.dataList.add(new Setting("Velocidad", "N/A"));
         this.dataList.add(new Setting("GPS", "N/A"));
     }

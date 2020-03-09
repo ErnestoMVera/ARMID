@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -35,6 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import mehdi.sakout.fancybuttons.FancyButton;
 import mx.uabc.ahrs.R;
 import mx.uabc.ahrs.adapters.TrainingAdapter;
 import mx.uabc.ahrs.data.DatabaseManager;
@@ -73,7 +73,7 @@ public class TrainingFragment extends Fragment {
     @OnClick(R.id.record_spot)
     public void recordSpot(View view) {
 
-        Button recordBtn = (Button) view;
+        FancyButton recordBtn = (FancyButton) view;
 
         int action = isRecording ? SensorStreamingEvent.STOP : SensorStreamingEvent.START;
         EventBus.getDefault().post(new SensorStreamingEvent(action));

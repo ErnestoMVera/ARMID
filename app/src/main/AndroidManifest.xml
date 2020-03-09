@@ -18,11 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".DeviceTestActivity" />
         <activity android:name=".ConsentActivity" />
         <activity
             android:name=".SensorActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".SettingsActivity" />
         <activity
             android:name=".MainActivity"

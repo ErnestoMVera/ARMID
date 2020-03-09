@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_white"
     android:keepScreenOn="true"
     tools:context=".SensorActivity">
 
@@ -18,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
+        android:background="@color/color_white"
         app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

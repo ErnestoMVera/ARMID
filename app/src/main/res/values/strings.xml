@@ -22,7 +22,7 @@
     <string name="parabrisas">Parabrisas</string>
 
     <string name="orientation_angle">%1$s: %2$.2f</string>
-    <string name="validation_template">%1$d,%2$d,%3$.2f,%4$f,%5$f\n</string>
+    <string name="validation_template">%1$d,%2$d,%3$d,\n</string>
     <string name="recollection_template">%1$d,%2$f,%3$f,%4$f,%5$f,%6$d,%7$.2f,%8$f,%9$f,%10$s,%11$s\n</string>
 
     <!--    Main Activity-->
@@ -30,6 +30,8 @@
     <string name="title_connecting">connecting…</string>
     <string name="title_connected_to">connected: </string>
     <string name="title_not_connected">not connected</string>
+    <string name="opciones_para_el_conjunto_de_datos">Opciones para el conjunto de datos</string>
+    <string name="opciones_para_el_rea">Opciones para el área</string>
 
 
 </resources>
