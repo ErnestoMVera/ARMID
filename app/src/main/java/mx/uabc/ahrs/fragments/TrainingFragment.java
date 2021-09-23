@@ -181,7 +181,6 @@ public class TrainingFragment extends Fragment {
 
     @OnClick(R.id.upload_dataset)
     public void uploadDataset() {
-
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
