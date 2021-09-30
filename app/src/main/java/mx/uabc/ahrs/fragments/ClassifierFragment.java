@@ -115,7 +115,7 @@ public class ClassifierFragment extends Fragment {
         readings++;
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
-                event.getY(), event.getZ(), -1);
+                0, 0, -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
 
         if (predictedSpot == selectedSpot)

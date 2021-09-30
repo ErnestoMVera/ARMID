@@ -54,7 +54,7 @@ public class TrainingFragment extends Fragment {
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
-        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), selectedIndex);
+        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), 0, 0, selectedIndex);
 
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(selectedIndex, dataPoint));

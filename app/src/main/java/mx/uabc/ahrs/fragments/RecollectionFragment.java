@@ -309,7 +309,7 @@ public class RecollectionFragment extends Fragment {
         if (lastLocation == null || fileOutputStream == null)
             return;
 
-        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
+        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), 0, 0, -1);
         int spot = classifier.classifyDataPoint(dataPoint);
 
         RecollectionData data = new RecollectionData(spot, lastLocation.getSpeed(),
@@ -320,7 +320,7 @@ public class RecollectionFragment extends Fragment {
         getActivity().runOnUiThread(() -> adapter.addItem(data));
 
         String toSave = mContext.getString(R.string.recollection_template, event.getTimestamp(),
-                event.getPitch(), event.getRoll(), event.getY(), event.getZ(), spot,
+                event.getPitch(), event.getRoll(), 0, 0, spot,
                 lastLocation.getSpeed(), lastLocation.getLatitude(),
                 lastLocation.getLongitude(), comportamiento, tareaSecundaria);
 

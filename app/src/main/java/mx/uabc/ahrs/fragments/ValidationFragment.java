@@ -159,7 +159,7 @@ public class ValidationFragment extends Fragment {
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
-                event.getY(), event.getZ(), -1);
+                0, 0, -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
 
         String text = mContext.getString(R.string.validation_template,

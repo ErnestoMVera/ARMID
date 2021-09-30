@@ -56,6 +56,7 @@ public class SensorActivity extends AppCompatActivity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int NUMEROLECTURAS = 2; // Numero de lecturas que le pedimos al sensor.
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -77,6 +78,12 @@ public class SensorActivity extends AppCompatActivity {
                     KEYCODE_DPAD_UP, KEYCODE_BUTTON_B, KEYCODE_BUTTON_Y,
                     KEYCODE_BUTTON_L1, KEYCODE_BUTTON_R1));
 
+    /*
+    * El sensor envia varios mensajes cuando lee dos o más sensores a la vez.
+    * Esta variable se encarga de llevar un control de cual es el sensor que se lee en un momento dado,
+    * Esto depende de la configuración que le damos al sensor en el metodo StartSensorStreaming.
+    */
+    private int sensorActual = 0;
     @Subscribe
     public void onSensorStreamingEvent(SensorStreamingEvent sensorStreamingEvent) {
 
@@ -157,7 +164,6 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     private void changeFragment(Fragment fragment) {
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container,
@@ -192,7 +198,13 @@ public class SensorActivity extends AppCompatActivity {
                     break;
                 case MESSAGE_READ:
                     String readMessage = (String) msg.obj;
-                    processSensorMessage(readMessage);
+                    sensorActual = (sensorActual+1)%NUMEROLECTURAS;
+                    if(sensorActual == 0) { // Angulos Euler.
+                        processSensorMessage(readMessage);
+                    }
+                    else if(sensorActual == 1) { // Giroscopio o accelerometro.
+                        processSensorGiroscope(readMessage);
+                    }
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -207,53 +219,48 @@ public class SensorActivity extends AppCompatActivity {
             }
         }
     };
-
+    //0.04248,-1.45404,-0.00939
     private void processSensorMessage(String readMessage) {
-
-        String[] parts = readMessage.split(",");
-
-        if (parts.length == 2) {
-
-            try {
-
-                lastY = Double.parseDouble(parts[0]);
-                lastZ = Double.parseDouble(parts[1]);
-
-            } catch (Exception e) {
-
-                lastY = 0;
-                lastY = 0;
-
-            }
-
-        } else if (parts.length == 3) {
-
-            double pitch, roll, yaw;
-
-            try {
-
-                pitch = Double.parseDouble(parts[0]);
-                yaw = Double.parseDouble(parts[1]);
-                roll = Double.parseDouble(parts[2]);
-
-            } catch (Exception e) {
-
-                pitch = 0;
-                yaw = 0;
-                roll = 0;
-
-            }
-
-            String msg = pitch + "," + roll + "\r\n";
-            sendMessage(msg);
-
-            long timestamp = System.currentTimeMillis();
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
+        String[] parts = readMessage.split(","); // Lectura de los angulos Euler.
+        // Lecturas de angulos Euler.
+        double pitch, roll, yaw;
+        // Lecturas del accelerometro.
+        double accx, accy,accz;
+        try {
+            pitch = Double.parseDouble(parts[0]);
+            yaw = Double.parseDouble(parts[1]);
+            roll = Double.parseDouble(parts[2]);
+        } catch (Exception e) {
+            pitch = 0;
+            yaw = 0;
+            roll = 0;
         }
+        String msg = pitch + "," + roll + "\r\n";
+        sendMessage(msg);
+        Log.i("Euler", msg);
+        long timestamp = System.currentTimeMillis();
+        EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, timestamp));
+    }
+
+    private void processSensorGiroscope(String readMessage) {
+        String[] parts = readMessage.split(",");
+        // Lecturas del accelerometro.
+        double accx, accy,accz;
+        try {
+            accx = Double.parseDouble(parts[0]);
+            accy = Double.parseDouble(parts[1]);
+            accz = Double.parseDouble(parts[2]);
+        } catch (Exception e) {
+            accx = 0;
+            accy = 0;
+            accz = 0;
+        }
+        Log.i("Acc", accx +","+accy+","+accz);
+        long timestamp = System.currentTimeMillis();
+        EventBus.getDefault().post(new SensorReadingEvent(accx, accy, timestamp));
     }
 
     private void sendMessage(String message) {
-
         // Check that we're actually connected before trying anything
         if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED)
             return;
@@ -267,7 +274,6 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     private void sendSensorMessage(String message) {
-
         // Check that we're actually connected before trying anything
         if (mBluetoothSensorService.getState() != BluetoothSensorService.STATE_CONNECTED) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
@@ -321,7 +327,7 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     private void startSensorStreaming() {
-        sendSensorMessage(":80,7,255,255,255,255,255,255,255\n");
+        sendSensorMessage(":80,7,34,255,255,255,255,255,255\n");
         sendSensorMessage(":82,25000,-1,0\n");
         sendSensorMessage(":85\n");
     }
