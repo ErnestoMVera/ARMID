@@ -4,6 +4,7 @@ public class DataPoint {
 
     private double pitch;
     private double roll;
+    private double x;
     private double y;
     private double z;
     private int spot;
@@ -11,9 +12,19 @@ public class DataPoint {
     public DataPoint(double pitch, double roll, double y, double z, int spot) {
         this.pitch = pitch;
         this.roll = roll;
+        this.spot = spot;
+    }
+    public DataPoint(double x, double y, double z) {
+        this.pitch = 0;
+        this.roll = 0;
+        this.x = x;
         this.y = y;
         this.z = z;
-        this.spot = spot;
+    }
+
+
+    public double getX() {
+        return x;
     }
 
     public DataPoint(DataPoint dataPoint) {

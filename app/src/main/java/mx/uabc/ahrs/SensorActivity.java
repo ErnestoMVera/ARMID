@@ -257,7 +257,7 @@ public class SensorActivity extends AppCompatActivity {
         }
         Log.i("Acc", accx +","+accy+","+accz);
         long timestamp = System.currentTimeMillis();
-        EventBus.getDefault().post(new SensorReadingEvent(accx, accy, timestamp));
+        EventBus.getDefault().post(new SensorReadingEvent(accx, accy,accz, timestamp));
     }
 
     private void sendMessage(String message) {

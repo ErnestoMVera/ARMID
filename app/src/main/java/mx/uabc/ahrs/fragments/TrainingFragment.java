@@ -1,6 +1,4 @@
 package mx.uabc.ahrs.fragments;
-
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
@@ -28,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,14 +49,18 @@ public class TrainingFragment extends Fragment {
     private User user;
     private boolean isRecording;
     private ProgressDialog progressDialog;
+    private ArrayList<DataPoint> nuevoSensor;
 
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
-
-        DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), 0, 0, selectedIndex);
-
-        assert getActivity() != null;
-        getActivity().runOnUiThread(() -> adapter.addItem(selectedIndex, dataPoint));
+        if(event.getAccelX() == 0) {
+            DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), 0, 0, selectedIndex);
+            assert getActivity() != null;
+            getActivity().runOnUiThread(() -> adapter.addItem(selectedIndex, dataPoint));
+        }
+        else {
+            nuevoSensor.add(new DataPoint(event.getAccelX(),event.getAccelY(), event.getAccelZ()));
+        }
     }
 
     @BindView(R.id.listView)
@@ -177,6 +180,7 @@ public class TrainingFragment extends Fragment {
             Toast.makeText(mContext, "No se pudo escribir el dataset", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+        guardarArchivoSensor();
     }
 
     @OnClick(R.id.upload_dataset)
@@ -184,14 +188,15 @@ public class TrainingFragment extends Fragment {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
-
-        if (!trainingFile.exists()) {
+        File accFile = new File(mContext.getFilesDir(), user.trainingFilename+"Acc");
+        if (!trainingFile.exists() || !accFile.exists()) {
             Toast.makeText(mContext, "No se encontró el dataset de entrenamiento",
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
         Uri file = Uri.fromFile(trainingFile);
+        Uri acc = Uri.fromFile(accFile);
 
         String[] split = user.name.toLowerCase().split(" ");
         StringBuilder ref = new StringBuilder();
@@ -200,16 +205,15 @@ public class TrainingFragment extends Fragment {
             ref.append(p).append("_");
         }
 
-        ref.append("training.csv");
+        ref.append("training");
 
-        StorageReference trainingRef = storageRef.child("training/" + ref);
-
+        StorageReference trainingRef = storageRef.child("training/" + ref+".csv");
+        StorageReference accTrain = storageRef.child("training/" + ref+"acc"+".csv");
         progressDialog = ProgressDialog.show(mContext, "",
-                "Subiendo archivo...",
+                "Subiendo archivo... 1",
                 true, false);
 
         UploadTask uploadTask = trainingRef.putFile(file);
-
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
             Toast.makeText(mContext,
@@ -219,6 +223,19 @@ public class TrainingFragment extends Fragment {
                 .addOnSuccessListener(taskSnapshot -> {
                     Toast.makeText(mContext,
                             "Dataset subido exitosamente", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                });
+
+        UploadTask upload = accTrain.putFile(acc);
+        // Register observers to listen for when the download is done or if it fails
+        upload.addOnFailureListener(exception -> {
+            Toast.makeText(mContext,
+                    exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        })
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(mContext,
+                            "Dataset Giro subido", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 });
 
@@ -248,6 +265,7 @@ public class TrainingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         assert args != null;
+        nuevoSensor = new ArrayList<>();
         int userId = args.getInt(USER_ID_PARAM);
         user = DatabaseManager.getInstance(mContext).getUserDao().loadById(userId);
     }
@@ -311,5 +329,41 @@ public class TrainingFragment extends Fragment {
             EventBus.getDefault().post(new SensorStreamingEvent(SensorStreamingEvent.STOP));
 
         super.onDestroy();
+    }
+
+    public void guardarArchivoSensor() {
+        File accFile = new File(mContext.getFilesDir(), user.trainingFilename+"Acc");
+        if (accFile.exists()) {
+            accFile.delete();
+        } else {
+            try {
+                accFile.createNewFile();
+            } catch (IOException e) {
+                Toast.makeText(mContext, "No se pudo crear el dataset",
+                        Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+        try {
+
+            FileOutputStream fileOutputStream = new FileOutputStream(accFile);
+            for (DataPoint dataPoint : nuevoSensor) {
+                String data = dataPoint.getX() + ","
+                        + dataPoint.getY() + ","
+                        + dataPoint.getZ() + ","+"\n";
+                fileOutputStream.write(data.getBytes());
+            }
+
+            fileOutputStream.close();
+
+            Toast.makeText(mContext, "Dataset guardado", Toast.LENGTH_SHORT).show();
+
+        } catch (FileNotFoundException e) {
+            Toast.makeText(mContext, "No se encontró el dataset", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        } catch (IOException e) {
+            Toast.makeText(mContext, "No se pudo escribir el dataset", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 }
