@@ -4,14 +4,16 @@ public class DataPoint {
 
     private double pitch;
     private double roll;
+    private double yaw;
     private double x;
     private double y;
     private double z;
     private int spot;
 
-    public DataPoint(double pitch, double roll, double y, double z, int spot) {
+    public DataPoint(double pitch, double roll, double yaw, double z, int spot) {
         this.pitch = pitch;
         this.roll = roll;
+        this.yaw = yaw;
         this.spot = spot;
     }
     public DataPoint(double x, double y, double z) {
@@ -29,7 +31,15 @@ public class DataPoint {
 
     public DataPoint(DataPoint dataPoint) {
         this(dataPoint.getPitch(), dataPoint.getRoll(),
-                dataPoint.getY(), dataPoint.getZ(), dataPoint.getSpot());
+                dataPoint.getYaw(), dataPoint.getZ(), dataPoint.getSpot());
+    }
+
+    public double getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(double yaw) {
+        this.yaw = yaw;
     }
 
     public double getPitch() {

@@ -54,7 +54,7 @@ public class TrainingFragment extends Fragment {
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
         if(event.getAccelX() == 0) {
-            DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), 0, 0, selectedIndex);
+            DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getYaw(), 0, selectedIndex);
             assert getActivity() != null;
             getActivity().runOnUiThread(() -> adapter.addItem(selectedIndex, dataPoint));
         }
@@ -71,6 +71,7 @@ public class TrainingFragment extends Fragment {
 
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.clearItem(selectedIndex));
+        nuevoSensor.clear();
     }
 
     @OnClick(R.id.record_spot)
@@ -162,8 +163,7 @@ public class TrainingFragment extends Fragment {
                 for (DataPoint dataPoint : list) {
                     String data = dataPoint.getPitch() + ","
                             + dataPoint.getRoll() + ","
-                            + dataPoint.getY() + ","
-                            + dataPoint.getZ() + ","
+                            + dataPoint.getYaw() + ","
                             + dataPoint.getSpot() + "\n";
                     fileOutputStream.write(data.getBytes());
                 }

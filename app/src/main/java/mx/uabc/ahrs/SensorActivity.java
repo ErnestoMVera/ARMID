@@ -239,7 +239,7 @@ public class SensorActivity extends AppCompatActivity {
         sendMessage(msg);
         Log.i("Euler", msg);
         long timestamp = System.currentTimeMillis();
-        EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, timestamp));
+        EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, yaw,0,0,0,timestamp));
     }
 
     private void processSensorGiroscope(String readMessage) {
