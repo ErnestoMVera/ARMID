@@ -113,7 +113,6 @@ public class ClassifierFragment extends Fragment {
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
         readings++;
-
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
                 event.getY(), event.getZ(), -1);
         int predictedSpot = classifier.classifyDataPoint(dataPoint);
