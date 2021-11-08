@@ -56,14 +56,18 @@ public class SensorActivity extends AppCompatActivity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int GYROSCOPE_INDEX = 0;
+    public static final int ORIENTATION_INDEX = 1;
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
     public static final String USER_ID_PARAM = "userIdParam";
 
+    private int lecturaActual = 0;
     private int userId;
     private double lastY, lastZ;
+    private double magGyro = 0;
 
     private SharedPreferencesManager sharedPreferencesManager;
 
@@ -157,7 +161,6 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     private void changeFragment(Fragment fragment) {
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container,
@@ -226,8 +229,7 @@ public class SensorActivity extends AppCompatActivity {
 
             }
 
-        } else if (parts.length == 3) {
-
+        } else if (parts.length == 3 && lecturaActual == ORIENTATION_INDEX) {
             double pitch, roll, yaw;
 
             try {
@@ -246,9 +248,27 @@ public class SensorActivity extends AppCompatActivity {
 
             String msg = pitch + "," + roll + "\r\n";
             sendMessage(msg);
-
+            lecturaActual = (lecturaActual + 1)%2;
             long timestamp = System.currentTimeMillis();
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, timestamp));
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, magGyro, timestamp));
+        }
+        else if(parts.length == 3 && lecturaActual == GYROSCOPE_INDEX) {
+            double pitch, roll, yaw;
+            try {
+
+                pitch = Double.parseDouble(parts[0]);
+                yaw = Double.parseDouble(parts[1]);
+                roll = Double.parseDouble(parts[2]);
+
+            } catch (Exception e) {
+
+                pitch = 0;
+                yaw = 0;
+                roll = 0;
+
+            }
+            lecturaActual = (lecturaActual + 1)%2;
+            magGyro = Math.sqrt(pitch*pitch + yaw*yaw + roll*roll);
         }
     }
 

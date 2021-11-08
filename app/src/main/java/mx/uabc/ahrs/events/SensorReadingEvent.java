@@ -6,6 +6,7 @@ public class SensorReadingEvent {
     private double roll;
     private double y;
     private double z;
+    private double magGyro;
     private long timestamp;
 
     public SensorReadingEvent(double pitch, double roll, double y, double z, long timestamp) {
@@ -15,7 +16,13 @@ public class SensorReadingEvent {
         this.z = z;
         this.timestamp = timestamp;
     }
-
+    public SensorReadingEvent(double pitch, double roll, double y, double z, double magGyro, long timestamp) {
+        this.pitch = pitch;
+        this.roll = roll;
+        this.y = y;
+        this.z = z;
+        this.timestamp = timestamp;
+    }
     public double getPitch() {
         return pitch;
     }
@@ -30,6 +37,10 @@ public class SensorReadingEvent {
 
     public double getZ() {
         return z;
+    }
+
+    public double getMagGyro() {
+        return magGyro;
     }
 
     public long getTimestamp() {
