@@ -67,7 +67,7 @@ public class SensorActivity extends AppCompatActivity {
     private int lecturaActual = 0;
     private int userId;
     private double lastY, lastZ;
-    private double magGyro = 0;
+    private double magGyro;
 
     private SharedPreferencesManager sharedPreferencesManager;
 
@@ -269,6 +269,7 @@ public class SensorActivity extends AppCompatActivity {
             }
             lecturaActual = (lecturaActual + 1)%2;
             magGyro = Math.sqrt(pitch*pitch + yaw*yaw + roll*roll);
+
         }
     }
 

@@ -21,6 +21,7 @@ public class SensorReadingEvent {
         this.roll = roll;
         this.y = y;
         this.z = z;
+        this.magGyro = magGyro;
         this.timestamp = timestamp;
     }
     public double getPitch() {
