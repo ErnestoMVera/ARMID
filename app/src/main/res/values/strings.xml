@@ -23,7 +23,7 @@
 
     <string name="orientation_angle">%1$s: %2$.2f</string>
     <string name="validation_template">%1$d,%2$d,%3$d,\n</string>
-    <string name="recollection_template">%1$d,%2$f,%3$f,%4$f,%5$f,%6$d,%7$.2f,%8$f,%9$f,%10$s,%11$s\n</string>
+    <string name="recollection_template">%1$d,%2$f,%3$f,%4$f,%5$f,%6$d,%7$.2f,%8$f,%9$f,%10$s,%11$s,%12$.2f\n</string>
 
     <!--    Main Activity-->
     <string name="not_connected">You are not connected to a device</string>

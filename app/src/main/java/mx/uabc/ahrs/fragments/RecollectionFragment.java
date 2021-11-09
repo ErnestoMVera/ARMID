@@ -1,8 +1,10 @@
 package mx.uabc.ahrs.fragments;
 
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -192,7 +195,7 @@ public class RecollectionFragment extends Fragment {
 
                 fileOutputStream = new FileOutputStream(datasetFile, true);
 
-                String header = "timestamp,pitch,roll,y,z,spot,speed,lat,lng,comportamiento,tarea_secundaria\n";
+                String header = "timestamp,pitch,roll,y,z,spot,speed,lat,lng,comportamiento,tarea_secundaria, Magnitud_Velocidad\n";
 
                 fileOutputStream.write(header.getBytes());
 
@@ -322,7 +325,7 @@ public class RecollectionFragment extends Fragment {
         String toSave = mContext.getString(R.string.recollection_template, event.getTimestamp(),
                 event.getPitch(), event.getRoll(), event.getY(), event.getZ(), spot,
                 lastLocation.getSpeed(), lastLocation.getLatitude(),
-                lastLocation.getLongitude(), comportamiento, tareaSecundaria);
+                lastLocation.getLongitude(), comportamiento, tareaSecundaria, event.getMagGyro());
 
         try {
 
