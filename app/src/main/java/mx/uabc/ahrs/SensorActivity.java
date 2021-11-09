@@ -341,7 +341,7 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     private void startSensorStreaming() {
-        sendSensorMessage(":80,7,255,255,255,255,255,255,255\n");
+        sendSensorMessage(":80,38,7,255,255,255,255,255,255\n");
         sendSensorMessage(":82,25000,-1,0\n");
         sendSensorMessage(":85\n");
     }
