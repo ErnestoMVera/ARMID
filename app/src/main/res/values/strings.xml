@@ -23,7 +23,7 @@
 
     <string name="orientation_angle">%1$s: %2$.2f</string>
     <string name="validation_template">%1$d,%2$d,%3$d,\n</string>
-    <string name="recollection_template">%1$d,%2$f,%3$f,%4$f,%5$f,%6$d,%7$.2f,%8$f,%9$f,%10$s,%11$s,%12$f\n</string>
+    <string name="recollection_template">%1$d,%2$f,%3$f,%4$f,%5$f,%6$d,%7$.2f,%8$f,%9$f,%10$s,%11$s,%12$f,%13$s\n</string>
 
     <!--    Main Activity-->
     <string name="not_connected">You are not connected to a device</string>
@@ -33,5 +33,14 @@
     <string name="opciones_para_el_conjunto_de_datos">Opciones para el conjunto de datos</string>
     <string name="opciones_para_el_rea">Opciones para el área</string>
 
+    <!-- Radio Buttons recollection fragment -->
+    <string name="radioRango1">0-10KM/H</string>
+    <string name="radioRango2">10-20KM/H</string>
+    <string name="radioRango3">20-30KM/H</string>
+    <string name="radioRango4">30-40KM/H</string>
+    <string name="radioRango5">40-50KM/H</string>
+    <string name="radioRango6">50-60KM/H</string>
+    <string name="radioRango7">60-70KM/H</string>
+    <string name="radioRango8">70-80KM/H</string>
 
 </resources>

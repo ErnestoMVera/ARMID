@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/btns_dataset"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -149,6 +152,75 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/grupoVelocidad"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango1" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango2" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio20"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango3" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango4" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio40"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango5" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio50"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango6" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio60"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango7" />
+
+                    <RadioButton
+                        android:id="@+id/kmsRadio70"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/radioRango8" />
+                </RadioGroup>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

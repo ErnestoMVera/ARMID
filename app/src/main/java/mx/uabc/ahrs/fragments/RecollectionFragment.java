@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -86,6 +87,7 @@ public class RecollectionFragment extends Fragment {
     private Location lastLocation;
     private String comportamiento;
     private String tareaSecundaria;
+    private String velocidadRango = "0-10";
 
     private Unbinder unbinder;
     private Context mContext;
@@ -196,7 +198,7 @@ public class RecollectionFragment extends Fragment {
 
                 fileOutputStream = new FileOutputStream(datasetFile, true);
 
-                String header = "timestamp,pitch,roll,y,z,spot,speed,lat,lng,comportamiento,tarea_secundaria, Magnitud_Velocidad\n";
+                String header = "timestamp,pitch,roll,y,z,spot,speed,lat,lng,comportamiento,tarea_secundaria, Magnitud_Velocidad, rango_velocidad\n";
 
                 fileOutputStream.write(header.getBytes());
 
@@ -310,22 +312,25 @@ public class RecollectionFragment extends Fragment {
     @Subscribe
     public void onSensorReadingEvent(SensorReadingEvent event) {
 
-        if (lastLocation == null || fileOutputStream == null)
+        if (fileOutputStream == null)//if (lastLocation == null || fileOutputStream == null)
             return;
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
         int spot = classifier.classifyDataPoint(dataPoint);
 
-        RecollectionData data = new RecollectionData(spot, lastLocation.getSpeed(),
+        /*RecollectionData data = new RecollectionData(spot, lastLocation.getSpeed(),
                 lastLocation.getLatitude(), lastLocation.getLongitude()
+        );*/
+        RecollectionData data = new RecollectionData(spot, 0,
+                0, 0
         );
-
         assert getActivity() != null;
         getActivity().runOnUiThread(() -> adapter.addItem(data));
         String toSave = mContext.getString(R.string.recollection_template, event.getTimestamp(),
                 event.getPitch(), event.getRoll(), event.getY(), event.getZ(), spot,
-                lastLocation.getSpeed(), lastLocation.getLatitude(),
-                lastLocation.getLongitude(), comportamiento, tareaSecundaria, event.getMagGyro());
+                0.0, 0.0,//lastLocation.getSpeed(), lastLocation.getLatitude(),
+                0.0, comportamiento, tareaSecundaria, event.getMagGyro(), velocidadRango);//lastLocation.getLongitude(), comportamiento, tareaSecundaria, event.getMagGyro(), velocidadRango);
+        Log.i("rango", velocidadRango);
 
         try {
 
@@ -415,6 +420,47 @@ public class RecollectionFragment extends Fragment {
         return locationRequest;
 
     }
+    @OnClick({R.id.kmsRadio0, R.id.kmsRadio10, R.id.kmsRadio20, R.id.kmsRadio30, R.id.kmsRadio40, R.id.kmsRadio50, R.id.kmsRadio60, R.id.kmsRadio70})
+    public void onRadioButtonClicked(@NonNull RadioButton radioButton) {
+        // Is the button now checked?
+        boolean checked = radioButton.isChecked();
+        // Check which radio button was clicked
+        switch(radioButton.getId()) {
+            case R.id.kmsRadio0:
+                if (checked)
+                    velocidadRango = "0-10";
+                    break;
+            case R.id.kmsRadio10:
+                if (checked)
+                    velocidadRango = "10-20";
+                    break;
+            case R.id.kmsRadio20:
+                if (checked)
+                    velocidadRango = "20-30";
+                    break;
+            case R.id.kmsRadio30:
+                if (checked)
+                    velocidadRango = "30-40";
+                    break;
+            case R.id.kmsRadio40:
+                if (checked)
+                    velocidadRango = "40-50";
+                    break;
+            case R.id.kmsRadio50:
+                if (checked)
+                    velocidadRango = "50-60";
+                    break;
+            case R.id.kmsRadio60:
+                if (checked)
+                    velocidadRango = "60-70";
+                    break;
+            case R.id.kmsRadio70:
+                if (checked)
+                    velocidadRango = "70-80";
+                    break;
+        }
+    }
+
 
     @Override
     public void onStart() {
