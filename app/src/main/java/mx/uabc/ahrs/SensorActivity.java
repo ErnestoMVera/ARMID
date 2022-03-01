@@ -250,9 +250,9 @@ public class SensorActivity extends AppCompatActivity {
             sendMessage(msg);
             //lecturaActual = (lecturaActual + 1)%2;
             long timestamp = System.currentTimeMillis();
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, 0, timestamp));
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, last0Z, magGyro, timestamp));
         }
-        /*else if(parts.length == 3 && lecturaActual == GYROSCOPE_INDEX) {
+        else if(parts.length == 9) {
             double pitch, roll, yaw;
             try {
 
@@ -270,7 +270,7 @@ public class SensorActivity extends AppCompatActivity {
             lecturaActual = (lecturaActual + 1)%2;
             magGyro = Math.sqrt(pitch*pitch + yaw*yaw + roll*roll);
 
-        }*/
+        }
     }
 
     private void sendMessage(String message) {
@@ -343,7 +343,7 @@ public class SensorActivity extends AppCompatActivity {
 
     private void startSensorStreaming() {
         //sendSensorMessage(":80,38,7,255,255,255,255,255,255\n");
-        sendSensorMessage(":80,7,255,255,255,255,255,255,255\n");
+        sendSensorMessage(":80,7,37,255,255,255,255,255,255\n");
         sendSensorMessage(":82,25000,-1,0\n");
         sendSensorMessage(":85\n");
     }
