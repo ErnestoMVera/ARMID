@@ -1,10 +1,8 @@
 package mx.uabc.ahrs.fragments;
 
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
@@ -14,14 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,6 +52,7 @@ import mx.uabc.ahrs.events.ControllerEvent;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.KnnClassifier;
 import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 import mx.uabc.ahrs.models.RecollectionData;
@@ -83,7 +80,7 @@ public class RecollectionFragment extends Fragment {
 
     private User user;
     private boolean isRecording;
-    private Classifier classifier;
+    private Classifier knnClassifier;
     private Location lastLocation;
     private String comportamiento;
     private String tareaSecundaria;
@@ -316,7 +313,7 @@ public class RecollectionFragment extends Fragment {
             return;
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(), event.getY(), event.getZ(), -1);
-        int spot = classifier.classifyDataPoint(dataPoint);
+        int spot = knnClassifier.classifyDataPoint(dataPoint);
 
         /*RecollectionData data = new RecollectionData(spot, lastLocation.getSpeed(),
                 lastLocation.getLatitude(), lastLocation.getLongitude()
@@ -384,7 +381,7 @@ public class RecollectionFragment extends Fragment {
         adapter = new RecollectionAdapter();
         listView.setAdapter(adapter);
 
-        classifier = new Classifier();
+        knnClassifier = new KnnClassifier();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
 
@@ -395,7 +392,7 @@ public class RecollectionFragment extends Fragment {
         }
 
         List<DataPoint> trainingDataSet = Utils.getTrainingDataSet(trainingFile);
-        classifier.addTrainingData(trainingDataSet);
+        knnClassifier.addTrainingData(trainingDataSet);
 
     }
 

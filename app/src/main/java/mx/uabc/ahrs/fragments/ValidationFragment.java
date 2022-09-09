@@ -33,6 +33,7 @@ import mx.uabc.ahrs.events.ControllerEvent;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.KnnClassifier;
 import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 
@@ -49,7 +50,7 @@ public class ValidationFragment extends Fragment {
     private User user;
     private boolean isRecording;
     private boolean isClassifying;
-    private Classifier classifier;
+    private Classifier knnClassifier;
 
     private Unbinder unbinder;
     private Context mContext;
@@ -160,7 +161,7 @@ public class ValidationFragment extends Fragment {
 
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
                 event.getY(), event.getZ(), -1);
-        int predictedSpot = classifier.classifyDataPoint(dataPoint);
+        int predictedSpot = knnClassifier.classifyDataPoint(dataPoint);
 
         String text = mContext.getString(R.string.validation_template,
                 event.getTimestamp(), selectedSpot, predictedSpot);
@@ -214,7 +215,7 @@ public class ValidationFragment extends Fragment {
 
     private void initUI() {
 
-        classifier = new Classifier();
+        knnClassifier = new KnnClassifier();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
 
@@ -225,7 +226,7 @@ public class ValidationFragment extends Fragment {
         }
 
         List<DataPoint> trainingDataSetList = Utils.getTrainingDataSet(trainingFile);
-        classifier.addTrainingData(trainingDataSetList);
+        knnClassifier.addTrainingData(trainingDataSetList);
         selectedSpot = 0;
         if (getActivity() != null)
             getActivity().runOnUiThread(() -> selectedArea

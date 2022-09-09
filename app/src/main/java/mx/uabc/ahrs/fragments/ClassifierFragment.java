@@ -33,6 +33,7 @@ import mx.uabc.ahrs.entities.User;
 import mx.uabc.ahrs.events.SensorReadingEvent;
 import mx.uabc.ahrs.events.SensorStreamingEvent;
 import mx.uabc.ahrs.helpers.Classifier;
+import mx.uabc.ahrs.helpers.KnnClassifier;
 import mx.uabc.ahrs.helpers.Utils;
 import mx.uabc.ahrs.models.DataPoint;
 
@@ -42,7 +43,7 @@ public class ClassifierFragment extends Fragment {
 
     private User user;
     private boolean isRecording;
-    private Classifier classifier;
+    private Classifier knnClassifier;
 
     private Unbinder unbinder;
     private Context mContext;
@@ -115,7 +116,7 @@ public class ClassifierFragment extends Fragment {
         readings++;
         DataPoint dataPoint = new DataPoint(event.getPitch(), event.getRoll(),
                 event.getY(), event.getZ(), -1);
-        int predictedSpot = classifier.classifyDataPoint(dataPoint);
+        int predictedSpot = knnClassifier.classifyDataPoint(dataPoint);
 
         if (predictedSpot == selectedSpot)
             correctReadings++;
@@ -188,7 +189,7 @@ public class ClassifierFragment extends Fragment {
 
         tagsList.get(0).callOnClick();
 
-        classifier = new Classifier();
+        knnClassifier = new KnnClassifier();
 
         File trainingFile = new File(mContext.getFilesDir(), user.trainingFilename);
 
@@ -199,7 +200,7 @@ public class ClassifierFragment extends Fragment {
         }
 
         List<DataPoint> trainingDataSet = Utils.getTrainingDataSet(trainingFile);
-        classifier.addTrainingData(trainingDataSet);
+        knnClassifier.addTrainingData(trainingDataSet);
 
     }
 
