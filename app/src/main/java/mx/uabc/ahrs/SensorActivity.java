@@ -250,7 +250,7 @@ public class SensorActivity extends AppCompatActivity {
             sendMessage(msg);
             //lecturaActual = (lecturaActual + 1)%2;
             long timestamp = System.currentTimeMillis();
-            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, last0Z, magGyro, timestamp));
+            EventBus.getDefault().post(new SensorReadingEvent(pitch, roll, lastY, lastZ, magGyro, timestamp));
         }
         else if(parts.length == 9) {
             double pitch, roll, yaw;
