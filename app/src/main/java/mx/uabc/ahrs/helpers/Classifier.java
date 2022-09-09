@@ -10,6 +10,11 @@ import mx.uabc.ahrs.models.DataPoint;
  *
  */
 public interface Classifier {
+    // Metodo para clasificar.
     int classifyDataPoint(DataPoint point);
+    /**
+     * Metodo para entrenar, en el caso de no usar el algoritmo KNN,
+     * este metodo se puede sobreescribir para entrenar el modelo (eg, redes neuronales, SVM o Naive bayes)
+     **/
     void addTrainingData(List<DataPoint> dataPoints);
 }
