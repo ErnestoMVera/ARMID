@@ -7,7 +7,6 @@ import mx.uabc.ahrs.models.DataPoint;
 /**
  * El objeto classifier se usa en tres clases,
  * ClassifierFragment, RecollectionFragment y Validation Fragment.
- *
  */
 public interface Classifier {
     // Metodo para clasificar.
